@@ -10,7 +10,10 @@ const GetExpense = z.object({
 
 export default resolver.pipe(resolver.zod(GetExpense), resolver.authorize(), async ({ id }) => {
   // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-  const expense = await db.expense.findFirst({ where: { id } })
+  const expense = await db.expense.findFirst({
+    where: { id },
+    include: { details: true, ratios: true },
+  })
 
   if (!expense) throw new NotFoundError()
 
