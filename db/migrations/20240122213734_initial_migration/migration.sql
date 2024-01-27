@@ -34,8 +34,49 @@ CREATE TABLE "Token" (
     "expiresAt" DATETIME NOT NULL,
     "sentTo" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
-    CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE "Refund" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "comment" TEXT NOT NULL,
+    "isValidated" BOOLEAN NOT NULL DEFAULT false,
+    "userId" INTEGER,
+    CONSTRAINT "Refund_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE "Expense" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "comment" TEXT NOT NULL,
+
+);
+
+CREATE TABLE "ExpenseDetail" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "date" DATETIME NOT NULL,
+    "value" DECIMAL NOT NULL,
+    "comment" TEXT NOT NULL,
+    "expenseId" INTEGER NOT NULL,
+    CONSTRAINT "ExpenseDetail_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "Expense" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE "ExpenseUserRatio" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "ratio" DECIMAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "expenseId" INTEGER NOT NULL,
+    CONSTRAINT "ExpenseUserRatio_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "ExpenseUserRatio_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "Expense" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
