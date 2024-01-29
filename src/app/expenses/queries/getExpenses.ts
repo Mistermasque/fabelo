@@ -18,7 +18,8 @@ export default resolver.pipe(
       skip,
       take,
       count: () => db.expense.count({ where }),
-      query: (paginateArgs) => db.expense.findMany({ ...paginateArgs, where, orderBy }),
+      query: (paginateArgs) =>
+        db.expense.findMany({ ...paginateArgs, where, orderBy, include: { details: true } }),
     })
 
     return {

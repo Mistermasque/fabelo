@@ -7,7 +7,17 @@ export default resolver.pipe(
   resolver.authorize(),
   async (input) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const expense = await db.expense.create({ data: input })
+    const { details, ...otherData } = input
+
+    const expense = await db.expense.create({
+      data: {
+        details: {
+          create: details,
+        },
+        ...otherData,
+      },
+      include: { details: true },
+    })
 
     return expense
   }

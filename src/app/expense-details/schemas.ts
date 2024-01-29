@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const CreateExpenseDetailSchema = z.object({
   // template: __fieldName__: z.__zodType__(),
-  date: z.date(),
+  date: z.coerce.date(),
   value: z.number(),
   comment: z.string(),
 })

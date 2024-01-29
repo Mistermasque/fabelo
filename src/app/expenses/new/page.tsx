@@ -1,18 +1,18 @@
 import { Metadata } from "next"
 import { Suspense } from "react"
-import { New__ModelName } from "../components/NewExpense"
+import { NewExpense } from "../components/NewExpense"
 
 export const metadata: Metadata = {
-  title: "New Project",
-  description: "Create a new project",
+  title: "Nouvelle dépense",
+  description: "Créer une nouvelle dépense",
 }
 
 export default function Page() {
   return (
     <div>
-      <h1>Create New Project</h1>
-      <Suspense fallback={<div>Loading...</div>}>
-        <New__ModelName />
+      <h1>Nouvelle dépense</h1>
+      <Suspense fallback={<div>Chargement...</div>}>
+        <NewExpense />
       </Suspense>
     </div>
   )

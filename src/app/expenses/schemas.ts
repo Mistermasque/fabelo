@@ -7,15 +7,16 @@ import {
 
 export const CreateExpenseSchema = z.object({
   // template: __fieldName__: z.__zodType__(),
-  comment: z.string(),
-  details: z.array(CreateExpenseDetailSchema),
-  ratios: z.array(CreateExpenseUserRatioSchema),
+  // details correspond à un tablea de CreateExpenseDetailSchema avec min un élément
+  // on utilise donc l'astuce des tuples variables : https://github.com/colinhacks/zod#tuples
+  details: z.tuple([CreateExpenseDetailSchema]).rest(CreateExpenseDetailSchema),
+  // ratios: z.array(CreateExpenseUserRatioSchema),
 })
 export const UpdateExpenseSchema = CreateExpenseSchema.merge(
   z.object({
     id: z.number(),
     details: z.array(UpdateExpenseDetailSchema),
-    ratios: z.array(UpdateExpenseUserRatioSchema),
+    // ratios: z.array(UpdateExpenseUserRatioSchema),
   })
 )
 

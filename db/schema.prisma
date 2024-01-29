@@ -70,7 +70,6 @@ model Expense {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  comment   String
 
   details ExpenseDetail[]
 
@@ -86,10 +85,10 @@ model ExpenseDetail {
   updatedAt DateTime @updatedAt
   date      DateTime
   value     Decimal
-  comment   String?
+  comment   String
 
-  expense   Expense? @relation(fields: [expenseId], references: [id])
-  expenseId Int?
+  expense   Expense @relation(fields: [expenseId], references: [id])
+  expenseId Int
 }
 
 model ExpenseUserRatio {
