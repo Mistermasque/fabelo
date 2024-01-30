@@ -21,10 +21,10 @@ model User {
   hashedPassword String?
   role           String   @default("USER")
 
-  tokens            Token[]
-  sessions          Session[]
-  expenseUserRatios ExpenseUserRatio[]
-  refunds           Refund[]
+  tokens           Token[]
+  sessions         Session[]
+  expenseUserParts ExpenseUserPart[]
+  refunds          Refund[]
 }
 
 model Session {
@@ -67,13 +67,14 @@ model Token {
 // }
 
 model Expense {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  isDefaultParts Boolean  @default(true)
 
   details ExpenseDetail[]
 
-  ratios ExpenseUserRatio[]
+  parts ExpenseUserPart[]
 
   refund   Refund? @relation(fields: [refundId], references: [id])
   refundId Int?
@@ -84,18 +85,20 @@ model ExpenseDetail {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   date      DateTime
-  value     Decimal
+  amount    Decimal
   comment   String
 
   expense   Expense @relation(fields: [expenseId], references: [id])
   expenseId Int
 }
 
-model ExpenseUserRatio {
+model ExpenseUserPart {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  ratio     Decimal
+  part      Int?
+  amount    Decimal
+  isAmount  Boolean  @default(false)
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
   expense   Expense  @relation(fields: [expenseId], references: [id])

@@ -3,22 +3,22 @@ import { resolver } from "@blitzjs/rpc"
 import db from "db"
 import { z } from "zod"
 
-const GetExpenseUserRatio = z.object({
+const GetExpenseUserPart = z.object({
   // This accepts type of undefined, but is required at runtime
   id: z.number().optional().refine(Boolean, "Required"),
 })
 
 export default resolver.pipe(
-  resolver.zod(GetExpenseUserRatio),
+  resolver.zod(GetExpenseUserPart),
   resolver.authorize(),
   async ({ id }) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const expenseUserRatio = await db.expenseUserRatio.findFirst({
+    const expenseUserPart = await db.expenseUserPart.findFirst({
       where: { id },
     })
 
-    if (!expenseUserRatio) throw new NotFoundError()
+    if (!expenseUserPart) throw new NotFoundError()
 
-    return expenseUserRatio
+    return expenseUserPart
   }
 )

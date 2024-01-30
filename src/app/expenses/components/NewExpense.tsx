@@ -5,18 +5,26 @@ import { useMutation } from "@blitzjs/rpc"
 import createExpense from "../mutations/createExpense"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
+import { useCurrentUser } from "../../users/hooks/useCurrentUser"
 
 export function NewExpense() {
   const [createExpenseMutation] = useMutation(createExpense)
   const router = useRouter()
+  const user = useCurrentUser()
+
+  const userId = user ? user.id : 0
+
   const initialValues: z.infer<typeof CreateExpenseSchema> = {
+    isDefaultParts: true,
     details: [
       {
-        value: 0,
+        amount: 0,
         comment: "",
         date: new Date(),
       },
     ],
+    userId: userId,
+    parts: [],
   }
 
   return (

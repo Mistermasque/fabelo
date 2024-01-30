@@ -1,17 +1,17 @@
 import { resolver } from "@blitzjs/rpc"
 import db from "db"
-import { UpdateExpenseUserRatioSchema } from "../schemas"
+import { UpdateExpenseUserPartSchema } from "../schemas"
 
 export default resolver.pipe(
-  resolver.zod(UpdateExpenseUserRatioSchema),
+  resolver.zod(UpdateExpenseUserPartSchema),
   resolver.authorize(),
   async ({ id, ...data }) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const expenseUserRatio = await db.expenseUserRatio.update({
+    const expenseUserPart = await db.expenseUserPart.update({
       where: { id },
       data,
     })
 
-    return expenseUserRatio
+    return expenseUserPart
   }
 )

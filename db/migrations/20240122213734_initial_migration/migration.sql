@@ -56,7 +56,8 @@ CREATE TABLE
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "userId" INTEGER,
+    "isDefaultParts" BOOLEAN NOT NULL DEFAULT true,
+    "userId" INTEGER NOT NULL,
     "refundId" INTEGER,
     CONSTRAINT "Expense_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Expense_refundId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
@@ -68,22 +69,24 @@ CREATE TABLE
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "date" DATETIME NOT NULL,
-    "value" DECIMAL NOT NULL,
+    "amount" DECIMAL NOT NULL,
     "comment" TEXT NOT NULL,
     "expenseId" INTEGER NOT NULL,
     CONSTRAINT "ExpenseDetail_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "Expense" ("id") ON DELETE CASCADE ON UPDATE CASCADE
   );
 
 CREATE TABLE
-  "ExpenseUserRatio" (
+  "ExpenseUserPart" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "ratio" DECIMAL NOT NULL,
+    "part" INTEGER,
+    "amount" DECIMAL NOT NULL,
+    "isAmount" BOOLEAN NOT NULL DEFAULT false,
     "userId" INTEGER NOT NULL,
     "expenseId" INTEGER NOT NULL,
-    CONSTRAINT "ExpenseUserRatio_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "ExpenseUserRatio_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "Expense" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "ExpenseUserPart_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "ExpenseUserPart_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "Expense" ("id") ON DELETE CASCADE ON UPDATE CASCADE
   );
 
 -- CreateIndex
