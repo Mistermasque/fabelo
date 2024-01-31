@@ -1,5 +1,5 @@
 import { FieldArray, useFormikContext } from "formik"
-import React, { PropsWithoutRef, Suspense } from "react"
+import React, { ChangeEvent, PropsWithoutRef, Suspense, useEffect, useState } from "react"
 import { LabeledTextField } from "src/app/components/LabeledTextField"
 import { CreateExpenseSchema, UpdateExpenseSchema } from "src/app/expenses/schemas"
 import { z } from "zod"
@@ -10,13 +10,14 @@ import {
 import { useUserParts } from "../hooks/useUserParts"
 import { useQuery } from "@blitzjs/rpc"
 import getUsers from "../../users/queries/getUsers"
+import { CreateExpenseDetailSchema, UpdateExpenseDetailSchema } from "../../expense-details/schemas"
 export { FORM_ERROR } from "src/app/components/Form"
 
 type PartType =
-  | (z.infer<typeof CreateExpenseUserPartSchema> & { user: { name: string | null; id: number } })
-  | (z.infer<typeof UpdateExpenseUserPartSchema> & { user: { name: string | null; id: number } })
+  | (z.infer<typeof CreateExpenseUserPartSchema> & { user?: { name: string | null; id: number } })
+  | (z.infer<typeof UpdateExpenseUserPartSchema> & { user?: { name: string | null; id: number } })
 
-export interface ExpensePartInputsProps {
+export interface ExpensePartsInputsProps {
   totalAmount: number
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
 }
@@ -33,7 +34,7 @@ function buildParts(
   // Construction des valeurs de base
   users.forEach((user) => {
     let value =
-      partValues && partValues.length > 1
+      partValues && partValues.length != 0
         ? partValues.find((part) => part.userId == user.id)
         : undefined
 
@@ -79,8 +80,8 @@ function buildParts(
   return parts
 }
 
-export function ExpensePartInputs({ totalAmount, outerProps }: ExpensePartInputsProps) {
-  const { values, setFieldValue } = useFormikContext<
+export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInputsProps) {
+  const { values, setFieldValue, handleChange } = useFormikContext<
     z.infer<typeof CreateExpenseSchema> | z.infer<typeof UpdateExpenseSchema>
   >()
 
@@ -88,16 +89,30 @@ export function ExpensePartInputs({ totalAmount, outerProps }: ExpensePartInputs
     getUsers,
     { order: "userId" },
     {
-      // This ensures the query never refreshes and overwrites the form data while the user is editing.
       staleTime: Infinity,
     }
   )
 
-  const parts = buildParts(users, values.parts, totalAmount)
+  let parts: PartType[] = values.parts
 
-  const handleChangePart = (userId: number, part: string) => {}
+  useEffect(() => {
+    values.parts = buildParts(users, values.parts, totalAmount) as PartType[]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.parts, totalAmount, users])
 
-  const handleChangeAmount = (userId: number, amount: string) => {}
+  // const parts = buildParts(users, values.parts, totalAmount)
+
+  const handleChangePart = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+    handleChange(e)
+    setFieldValue(`parts[${index}].isAmount`, false)
+
+    // setParts(buildParts(users, values.parts, totalAmount))
+  }
+
+  const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+    handleChange(e)
+    setFieldValue(`parts[${index}].isAmount`, true)
+  }
 
   return (
     <FieldArray
@@ -106,7 +121,7 @@ export function ExpensePartInputs({ totalAmount, outerProps }: ExpensePartInputs
         <div {...outerProps}>
           {parts.map((part, index) => (
             <div key={index}>
-              <div>{part.user.name}</div>
+              <div>{part.user?.name}</div>
               <input name={"parts[" + index + "].userId"} type="hidden" value={part.userId} />
               <input
                 name={"parts[" + index + "].isAmount"}
@@ -118,15 +133,15 @@ export function ExpensePartInputs({ totalAmount, outerProps }: ExpensePartInputs
                 label="Part"
                 placeholder="Part"
                 type="number"
-                onChange={(e) => handleChangePart(part.userId, e.target.value)}
+                onChange={(e) => handleChangePart(e, index)}
                 value={part.part}
               />
               <LabeledTextField
-                name={"parts[" + index + "].montant"}
-                label="Part"
-                placeholder="Part"
+                name={"parts[" + index + "].amount"}
+                label="Montant"
+                placeholder="Montant"
                 type="number"
-                onChange={(e) => handleChangeAmont(part.userId, e.target.value)}
+                onChange={(e) => handleChangeAmount(e, index)}
                 value={part.amount}
               />
             </div>

@@ -1,25 +1,26 @@
 import { FieldArray, useFormikContext } from "formik"
-import React from "react"
+import React, { useState } from "react"
 import { Form, FormProps } from "src/app/components/Form"
 import { LabeledTextField } from "src/app/components/LabeledTextField"
 
 import { z } from "zod"
 import { Detail, ExpenseDetailsInputs } from "./ExpenseDetailsInputs"
+import { ExpensePartsInputs } from "./ExpensePartsInputs"
 
 export { FORM_ERROR } from "src/app/components/Form"
 
 export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
-  const handleRemoveDetail = (detail: Detail) => {}
+  const [totalAmount, setTotalAmount] = useState(0)
 
-  const handleUpdateDetailAmount = (detail: Detail, newAmont: number) => {}
+  const handleUpdateDetailAmount = (total: number) => {
+    setTotalAmount(total)
+  }
 
   return (
     <Form<S> {...props}>
-      <ExpenseDetailsInputs
-        onRemove={handleRemoveDetail}
-        onUpdateAmount={handleUpdateDetailAmount}
-      />
-      <ExpensePartsInputs />
+      <div>{totalAmount}</div>
+      <ExpenseDetailsInputs onUpdateTotalAmount={handleUpdateDetailAmount} />
+      <ExpensePartsInputs totalAmount={totalAmount} />
     </Form>
   )
 }

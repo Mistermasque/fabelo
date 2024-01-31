@@ -1,5 +1,5 @@
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from "formik"
-import React, { ChangeEvent, PropsWithoutRef } from "react"
+import React, { ChangeEvent, PropsWithoutRef, useEffect } from "react"
 import { LabeledTextField } from "src/app/components/LabeledTextField"
 import {
   CreateExpenseDetailSchema,
@@ -15,14 +15,12 @@ export type Detail =
   | z.infer<typeof UpdateExpenseDetailSchema>
 
 export interface ExpenseDetailsInputsProps {
-  onRemove: (detail: Detail) => void
-  onUpdateAmount: (detail: Detail, newAmont: number) => void
+  onUpdateTotalAmount: (total: number) => void
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
 }
 
 export function ExpenseDetailsInputs({
-  onRemove,
-  onUpdateAmount,
+  onUpdateTotalAmount,
   outerProps,
 }: ExpenseDetailsInputsProps) {
   const { values, setFieldValue } = useFormikContext<
@@ -32,13 +30,24 @@ export function ExpenseDetailsInputs({
   const handleRemove = (arrayHelpers: FieldArrayRenderProps, index: number, detail: Detail) => {
     // TODO CONFIRM
     arrayHelpers.remove(index)
-    onRemove(detail)
   }
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>, index: number, detail: Detail) => {
     setFieldValue(`details[${index}].amount`, event.target.value)
-    onUpdateAmount(detail, values.details[index].amount)
   }
+
+  // Recalcul du total uniquement si les détails ont changé
+  useEffect(() => {
+    let total: number = 0
+
+    values.details.map((detail) => {
+      if (!detail.amount || Number.isNaN(detail.amount)) {
+        return
+      }
+      total += Number(detail.amount)
+    })
+    onUpdateTotalAmount(total)
+  }, [values.details, onUpdateTotalAmount])
 
   return (
     <FieldArray

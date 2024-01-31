@@ -3,7 +3,7 @@ import { z } from "zod"
 export const CreateExpenseUserPartSchema = z.object({
   // template: __fieldName__: z.__zodType__(),
   part: z.number().positive().optional(),
-  amount: z.number().positive(),
+  amount: z.number(),
   isAmount: z.boolean().optional(),
   userId: z.number(),
 })
