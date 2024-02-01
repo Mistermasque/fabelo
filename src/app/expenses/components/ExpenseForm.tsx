@@ -1,15 +1,25 @@
 import { FieldArray, useFormikContext } from "formik"
 import React, { useState } from "react"
 import { Form, FormProps } from "src/app/components/Form"
-import { LabeledTextField } from "src/app/components/LabeledTextField"
+import { LabeledSelectField } from "src/app/components/LabeledSelectField"
 
 import { z } from "zod"
 import { Detail, ExpenseDetailsInputs } from "./ExpenseDetailsInputs"
 import { ExpensePartsInputs } from "./ExpensePartsInputs"
+import { useQuery } from "@blitzjs/rpc"
+import getUsers from "../../users/queries/getUsers"
 
 export { FORM_ERROR } from "src/app/components/Form"
 
 export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
+  const [users, {}] = useQuery(
+    getUsers,
+    { order: "name" },
+    {
+      staleTime: Infinity,
+    }
+  )
+
   const [totalAmount, setTotalAmount] = useState(0)
 
   const handleUpdateDetailAmount = (total: number) => {
@@ -19,6 +29,12 @@ export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
   return (
     <Form<S> {...props}>
       <div>{totalAmount}</div>
+      <LabeledSelectField
+        name="userId"
+        label="Qui a payé"
+        options={users}
+        optionAttributeTitle="name"
+      />
       <ExpenseDetailsInputs onUpdateTotalAmount={handleUpdateDetailAmount} />
       <ExpensePartsInputs totalAmount={totalAmount} />
     </Form>

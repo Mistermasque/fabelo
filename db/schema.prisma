@@ -25,6 +25,7 @@ model User {
   sessions         Session[]
   expenseUserParts ExpenseUserPart[]
   refunds          Refund[]
+  Expense          Expense[]
 }
 
 model Session {
@@ -78,6 +79,9 @@ model Expense {
 
   refund   Refund? @relation(fields: [refundId], references: [id])
   refundId Int?
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 model ExpenseDetail {
@@ -96,7 +100,7 @@ model ExpenseUserPart {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  part      Int?
+  part      Decimal?
   amount    Decimal
   isAmount  Boolean  @default(false)
   user      User     @relation(fields: [userId], references: [id])

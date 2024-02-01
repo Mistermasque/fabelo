@@ -87,7 +87,7 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
 
   const [users, {}] = useQuery(
     getUsers,
-    { order: "userId" },
+    { order: "name" },
     {
       staleTime: Infinity,
     }

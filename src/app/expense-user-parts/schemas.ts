@@ -4,7 +4,7 @@ export const CreateExpenseUserPartSchema = z.object({
   // template: __fieldName__: z.__zodType__(),
   part: z.number().positive().optional(),
   amount: z.number(),
-  isAmount: z.boolean().optional(),
+  isAmount: z.boolean(),
   userId: z.number(),
 })
 export const UpdateExpenseUserPartSchema = CreateExpenseUserPartSchema.merge(

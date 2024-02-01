@@ -12,7 +12,11 @@ export default resolver.pipe(resolver.zod(GetExpense), resolver.authorize(), asy
   // TODO: in multi-tenant app, you must add validation to ensure correct tenant
   const expense = await db.expense.findFirst({
     where: { id },
-    include: { details: true, ratios: true },
+    include: {
+      user: { select: { name: true, hashedPassword: false } },
+      details: true,
+      parts: { include: { user: { select: { name: true, hashedPassword: false } } } },
+    },
   })
 
   if (!expense) throw new NotFoundError()
