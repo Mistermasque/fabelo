@@ -6,6 +6,7 @@ export const CreateExpenseDetailSchema = z.object({
   amount: z.number().or(z.string()).pipe(z.coerce.number()),
   comment: z.string(),
 })
+
 export const UpdateExpenseDetailSchema = CreateExpenseDetailSchema.merge(
   z.object({
     id: z.number(),

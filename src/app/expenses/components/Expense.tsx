@@ -13,7 +13,7 @@ export const Expense = ({ expenseId }: { expenseId: number }) => {
   return (
     <>
       <div>
-        <h1>Project {expense.id}</h1>
+        <h1>Dépense #{expense.id}</h1>
         <pre>{JSON.stringify(expense, null, 2)}</pre>
 
         <Link href={`/expenses/${expense.id}/edit`}>Edit</Link>

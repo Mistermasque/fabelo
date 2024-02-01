@@ -6,6 +6,7 @@ import { UpdateExpenseSchema } from "../schemas"
 import { FORM_ERROR, ExpenseForm } from "./ExpenseForm"
 import { useMutation, useQuery } from "@blitzjs/rpc"
 import { useRouter } from "next/navigation"
+import Loading from "@/src/app/loading"
 
 export const EditExpense = ({ expenseId }: { expenseId: number }) => {
   const [expense, { setQueryData }] = useQuery(
@@ -21,9 +22,9 @@ export const EditExpense = ({ expenseId }: { expenseId: number }) => {
   return (
     <>
       <div>
-        <h1>Edit Expense {expense.id}</h1>
+        <h1>Modification dépense #{expense.id}</h1>
         <pre>{JSON.stringify(expense, null, 2)}</pre>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={Loading()}>
           <ExpenseForm
             submitText="Update Expense"
             schema={UpdateExpenseSchema}

@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { Suspense } from "react"
 import { NewExpense } from "../components/NewExpense"
+import Loading from "@/src/app/loading"
 
 export const metadata: Metadata = {
   title: "Nouvelle dépense",
@@ -11,7 +12,7 @@ export default function Page() {
   return (
     <div>
       <h1>Nouvelle dépense</h1>
-      <Suspense fallback={<div>Chargement...</div>}>
+      <Suspense fallback={Loading()}>
         <NewExpense />
       </Suspense>
     </div>

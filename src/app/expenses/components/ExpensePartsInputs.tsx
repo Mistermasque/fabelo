@@ -60,20 +60,20 @@ function buildParts(
   parts.forEach((part) => {
     if (part.isAmount) {
       amount -= part.amount
-    } else if (part.part !== undefined && part.part !== null) {
+    } else if (part.part) {
       nbTotalParts += part.part
     }
   })
 
   // Mise à jour des montants et des parts
   parts.forEach((part) => {
-    if (!part.isAmount) {
+    if (part.isAmount) {
+      part.part = undefined
+    } else {
       if (part.part === undefined || part.part === null) {
         part.part = 1
       }
       part.amount = (amount * part.part) / nbTotalParts
-    } else {
-      part.part = undefined
     }
   })
 
@@ -95,18 +95,15 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
 
   let parts: PartType[] = values.parts
 
+  // Recalcul des parts si on les modifie ou si le montant total évolue
   useEffect(() => {
     values.parts = buildParts(users, values.parts, totalAmount) as PartType[]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.parts, totalAmount, users])
 
-  // const parts = buildParts(users, values.parts, totalAmount)
-
   const handleChangePart = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     handleChange(e)
     setFieldValue(`parts[${index}].isAmount`, false)
-
-    // setParts(buildParts(users, values.parts, totalAmount))
   }
 
   const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>, index: number) => {

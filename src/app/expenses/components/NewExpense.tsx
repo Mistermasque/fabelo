@@ -29,7 +29,7 @@ export function NewExpense() {
 
   return (
     <ExpenseForm
-      submitText="Create Expense"
+      submitText="Création dépense"
       schema={CreateExpenseSchema}
       initialValues={initialValues}
       onSubmit={async (values) => {

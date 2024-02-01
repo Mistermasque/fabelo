@@ -1,9 +1,6 @@
 import { z } from "zod"
-import { CreateExpenseDetailSchema, UpdateExpenseDetailSchema } from "../expense-details/schemas"
-import {
-  CreateExpenseUserPartSchema,
-  UpdateExpenseUserPartSchema,
-} from "../expense-user-parts/schemas"
+import { CreateExpenseDetailSchema } from "../expense-details/schemas"
+import { CreateExpenseUserPartSchema } from "../expense-user-parts/schemas"
 
 export const CreateExpenseSchema = z.object({
   // template: __fieldName__: z.__zodType__(),
@@ -17,8 +14,6 @@ export const CreateExpenseSchema = z.object({
 export const UpdateExpenseSchema = CreateExpenseSchema.merge(
   z.object({
     id: z.number(),
-    details: z.array(UpdateExpenseDetailSchema),
-    parts: z.array(UpdateExpenseUserPartSchema),
   })
 )
 
