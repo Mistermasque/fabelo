@@ -59,7 +59,11 @@ export default resolver.pipe(
           create: createParts,
         },
       },
-      include: { details: true, parts: true, user: true },
+      include: {
+        user: { select: { name: true, hashedPassword: false } },
+        details: true,
+        parts: { include: { user: { select: { name: true, hashedPassword: false } } } },
+      },
     })
 
     return expense

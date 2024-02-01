@@ -28,6 +28,7 @@ export const EditExpense = ({ expenseId }: { expenseId: number }) => {
           <ExpenseForm
             submitText="Update Expense"
             schema={UpdateExpenseSchema}
+            // @ts-ignore
             initialValues={expense}
             onSubmit={async (values) => {
               try {

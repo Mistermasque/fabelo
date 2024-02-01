@@ -2,7 +2,7 @@
 import { usePaginatedQuery } from "@blitzjs/rpc"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import getExpenses from "../queries/getExpenses"
+import getExpenses, { ExpenseWithTotalAmount } from "../queries/getExpenses"
 import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
@@ -34,9 +34,9 @@ export const ExpensesList = () => {
   return (
     <div>
       <ul>
-        {expenses.map((expense) => (
+        {expenses.map((expense: ExpenseWithTotalAmount) => (
           <li key={expense.id}>
-            <Link href={`/expenses/${expense.id}`}>{expense.name}</Link>
+            <Link href={`/expenses/${expense.id}`}>{expense.totalAmount}</Link>
           </li>
         ))}
       </ul>
