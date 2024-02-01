@@ -38,14 +38,13 @@ export function ExpenseDetailsInputs({
 
   // Recalcul du total uniquement si les détails ont changé
   useEffect(() => {
-    let total: number = 0
-
-    values.details.map((detail) => {
+    const total: number = values.details.reduce((accumulator, detail) => {
       if (!detail.amount || Number.isNaN(detail.amount)) {
-        return
+        return accumulator
       }
-      total += Number(detail.amount)
-    })
+      return accumulator + Number(detail.amount)
+    }, 0)
+
     onUpdateTotalAmount(total)
   }, [values.details, onUpdateTotalAmount])
 

@@ -7,7 +7,7 @@ export default resolver.pipe(
   resolver.authorize(),
   async (input) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const { details, parts, userId } = input
+    const { details, parts, userId, isDefaultParts } = input
 
     let createParts: {
       part?: number
@@ -16,19 +16,38 @@ export default resolver.pipe(
       user: { connect: { id: number } }
     }[] = []
 
-    parts.map((p) => {
-      const { part, isAmount, amount } = p
+    if (isDefaultParts) {
+      const users = await db.user.findMany({ select: { id: true } })
+      const total = details.reduce((accumulator, detail) => {
+        return accumulator + detail.amount
+      }, 0)
+      const nbUsers = users.length
+      const amount = total / nbUsers
 
-      createParts.push({
-        user: { connect: { id: p.userId } },
-        part,
-        isAmount,
-        amount,
+      users.map((u) => {
+        createParts.push({
+          user: { connect: { id: u.id } },
+          part: 1,
+          isAmount: false,
+          amount,
+        })
       })
-    })
+    } else {
+      parts.map((p) => {
+        const { part, isAmount, amount } = p
+
+        createParts.push({
+          user: { connect: { id: p.userId } },
+          part,
+          isAmount,
+          amount,
+        })
+      })
+    }
 
     const expense = await db.expense.create({
       data: {
+        isDefaultParts: isDefaultParts,
         user: { connect: { id: userId } },
         details: {
           create: details,

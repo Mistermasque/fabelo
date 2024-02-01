@@ -114,7 +114,7 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
     setFieldValue(`parts[${index}].isAmount`, true)
   }
 
-  return (
+  return values.isDefaultParts ? null : (
     <FieldArray
       name="parts"
       render={() => (

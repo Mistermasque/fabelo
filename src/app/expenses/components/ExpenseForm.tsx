@@ -8,6 +8,7 @@ import { Detail, ExpenseDetailsInputs } from "./ExpenseDetailsInputs"
 import { ExpensePartsInputs } from "./ExpensePartsInputs"
 import { useQuery } from "@blitzjs/rpc"
 import getUsers from "../../users/queries/getUsers"
+import LabeledCheckBoxField from "../../components/LabeledCheckBoxField"
 
 export { FORM_ERROR } from "src/app/components/Form"
 
@@ -36,6 +37,7 @@ export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
         optionAttributeTitle="name"
       />
       <ExpenseDetailsInputs onUpdateTotalAmount={handleUpdateDetailAmount} />
+      <LabeledCheckBoxField name="isDefaultParts" label="Utiliser la répartition par défaut" />
       <ExpensePartsInputs totalAmount={totalAmount} />
     </Form>
   )
