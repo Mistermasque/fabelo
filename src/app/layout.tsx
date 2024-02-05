@@ -1,10 +1,9 @@
 import "./styles/globals.css"
 import { BlitzProvider } from "./blitz-client"
-import { Inter } from "next/font/google"
 import Head from "next/head"
 
 export const metadata = {
-  title: { title: "Fabelo", template: "%s – Fabelo" },
+  title: { default: "Fabelo", template: "%s – Fabelo" },
   description: "Gestion des dépenses",
 }
 

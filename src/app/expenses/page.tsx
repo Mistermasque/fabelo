@@ -6,16 +6,16 @@ import Loading from "@/src/app/loading"
 
 export const metadata: Metadata = {
   title: "Dépenses",
-  description: "List des dépenses",
+  description: "Liste des dépenses",
 }
 
 export default function Page() {
   return (
     <div>
       <p>
-        <Link href={"/expenses/new"}>Nouvelle dépense</Link>
+        <Link href="/expenses/new">Nouvelle dépense</Link>
       </p>
-      <Suspense fallback={Loading()}>
+      <Suspense fallback={<Loading />}>
         <ExpensesList />
       </Suspense>
     </div>
