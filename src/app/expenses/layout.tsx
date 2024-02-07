@@ -1,10 +1,10 @@
 import { useAuthenticatedBlitzContext } from "src/app/blitz-server"
-import { DefaultLayout } from "../layout/DefaultLayout"
+import { PageLayout } from "../components/layout/PageLayout"
 
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   await useAuthenticatedBlitzContext({
     redirectTo: "/login",
   })
 
-  return <DefaultLayout>{children}</DefaultLayout>
+  return <PageLayout>{children}</PageLayout>
 }

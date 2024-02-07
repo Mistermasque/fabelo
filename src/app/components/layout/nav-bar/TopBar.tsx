@@ -1,6 +1,6 @@
 import { AppBar, IconButton, styled, Toolbar, Typography } from "@mui/material"
 import { Menu } from "@mui/icons-material"
-import { usePageTitle } from "../hooks/usePageTitle"
+import { usePageTitle } from "../../../hooks/usePageTitle"
 
 /**
  * Ce composant permet de décaler les éléments par rapport à la toolbar

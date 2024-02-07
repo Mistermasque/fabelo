@@ -1,10 +1,10 @@
 "use client"
 import { Box, CssBaseline, Stack } from "@mui/material"
-import { NavBar } from "@/src/app/layout/nav-bar/NavBar"
+import { NavBar } from "@/src/app/components/layout/nav-bar/NavBar"
 import { TopBar, TopBarOffset } from "./nav-bar/TopBar"
 import { ReactNode, useState } from "react"
 
-export function DefaultLayout({ children }: { children: ReactNode }) {
+export function PageLayout({ children }: { children: ReactNode }) {
   const [isNavBarOpened, setisNavBarOpened] = useState(false)
 
   const handleNavBarToggle = () => {
