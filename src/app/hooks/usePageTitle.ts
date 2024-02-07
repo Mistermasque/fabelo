@@ -7,8 +7,11 @@ const { useGlobalState } = createGlobalState({ pageTitle: "" })
  * @param initial
  * @returns [title: string, (title: string) => void]
  */
-export function usePageTitle(initial?: string): [string | undefined, (title: string) => void] {
+export function usePageTitle(initial?: string): {
+  pageTitle: string | undefined
+  setPageTitle: (title: string) => void
+} {
   const [pageTitle, setPageTitle] = useGlobalState("pageTitle")
 
-  return [pageTitle, setPageTitle]
+  return { pageTitle, setPageTitle }
 }

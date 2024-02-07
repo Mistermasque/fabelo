@@ -13,12 +13,18 @@ interface TopBarProps {
 }
 
 export function TopBar({ onNavBarToggle }: TopBarProps) {
-  const [pageTitle] = usePageTitle()
+  const { pageTitle } = usePageTitle()
 
   return (
     <AppBar position="fixed">
       <Toolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={onNavBarToggle}>
+        <IconButton
+          sx={{ mr: { xs: 0.5, sm: 2 } }}
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          onClick={onNavBarToggle}
+        >
           <Menu />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

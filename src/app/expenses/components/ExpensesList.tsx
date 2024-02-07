@@ -6,10 +6,15 @@ import getExpenses, { ExpenseWithTotalAmount } from "../queries/getExpenses"
 import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
+import { usePageTitle } from "../../hooks/usePageTitle"
 
 const ITEMS_PER_PAGE = 100
 
 export const ExpensesList = () => {
+  const { setPageTitle } = usePageTitle()
+
+  setPageTitle("Liste des dépenses")
+
   const searchparams = useSearchParams()!
   const page = Number(searchparams.get("page")) || 0
   const [{ expenses, hasMore }] = usePaginatedQuery(getExpenses, {
