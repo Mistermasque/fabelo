@@ -1,5 +1,14 @@
-import { ComponentPropsWithoutRef, forwardRef, PropsWithoutRef } from "react"
-import { useField, useFormikContext, ErrorMessage } from "formik"
+import { forwardRef, PropsWithoutRef } from "react"
+import { useField, useFormikContext } from "formik"
+import {
+  FormControl,
+  FormControlProps,
+  FormHelperText,
+  InputLabel,
+  InputLabelProps,
+  MenuItem,
+  Select,
+} from "@mui/material"
 
 export interface LabeledSelectFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["select"]> {
   /** Field name. */
@@ -10,53 +19,57 @@ export interface LabeledSelectFieldProps extends PropsWithoutRef<JSX.IntrinsicEl
   options: { id: number; [key: string]: any }[]
   /** Le nom de l'attribut dans les options à utiliser pour le titre */
   optionAttributeTitle: string
-  outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
-  labelProps?: ComponentPropsWithoutRef<"label">
+  formControlProps?: FormControlProps
+  labelProps?: InputLabelProps
+  id?: string
+  helperText?: string
 }
 
 export const LabeledSelectField = forwardRef<HTMLSelectElement, LabeledSelectFieldProps>(
-  ({ label, outerProps, labelProps, name, options, optionAttributeTitle, ...props }, ref) => {
-    const [input] = useField(name)
-    const { isSubmitting } = useFormikContext()
-
+  (
+    {
+      label,
+      formControlProps,
+      labelProps,
+      name,
+      options,
+      optionAttributeTitle,
+      id,
+      helperText,
+      ...props
+    },
+    ref
+  ) => {
+    const [input, meta] = useField(name)
+    const { isSubmitting, handleBlur, handleChange } = useFormikContext()
+    const inputId = id ? id : Math.random().toString(16).slice(2)
+    const labelId = id + "-label"
+    const formHelperText = meta.touched && meta.error ? meta.error : helperText
     return (
-      <div {...outerProps}>
-        <label {...labelProps}>
+      <FormControl {...formControlProps}>
+        <InputLabel id={labelId} {...labelProps}>
           {label}
-          <select {...input} disabled={isSubmitting} {...props} ref={ref}>
-            {options &&
-              options.map((value) => (
-                <option value={value.id} key={value.id}>
-                  {value[optionAttributeTitle]}
-                </option>
-              ))}
-          </select>
-        </label>
-        <ErrorMessage name={name}>
-          {(msg) => (
-            <div role="alert" style={{ color: "red" }}>
-              {msg}
-            </div>
-          )}
-        </ErrorMessage>
-
-        <style jsx>{`
-          label {
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-            font-size: 1rem;
-          }
-          select {
-            font-size: 1rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 3px;
-            border: 1px solid purple;
-            appearance: none;
-            margin-top: 0.5rem;
-          }
-        `}</style>
-      </div>
+        </InputLabel>
+        <Select
+          labelId={labelId}
+          id={inputId}
+          label={label}
+          disabled={isSubmitting}
+          {...input}
+          ref={ref}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={meta.touched && Boolean(meta.error)}
+        >
+          {options &&
+            options.map((value) => (
+              <MenuItem value={value.id} key={value.id}>
+                {value[optionAttributeTitle]}
+              </MenuItem>
+            ))}
+        </Select>
+        {formHelperText ? <FormHelperText>{formHelperText}</FormHelperText> : null}
+      </FormControl>
     )
   }
 )

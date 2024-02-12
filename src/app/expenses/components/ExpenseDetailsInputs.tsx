@@ -1,6 +1,8 @@
-import { FieldArray, FieldArrayRenderProps, useFormikContext } from "formik"
-import React, { ChangeEvent, PropsWithoutRef, useEffect } from "react"
-import { LabeledTextField } from "src/app/components/LabeledTextField"
+import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from "formik"
+import { TextField } from "formik-mui"
+import { DatePicker } from "@/src/app/components/formik-mui-date-picker/DatePicker"
+
+import React, { PropsWithoutRef, useEffect } from "react"
 import {
   CreateExpenseDetailSchema,
   UpdateExpenseDetailSchema,
@@ -8,6 +10,10 @@ import {
 
 import { z } from "zod"
 import { CreateExpenseSchema, UpdateExpenseSchema } from "../schemas"
+import dayjs from "dayjs"
+import { Stack } from "@mui/system"
+import { Divider, Button, InputAdornment } from "@mui/material"
+import { Add, Remove } from "@mui/icons-material"
 export { FORM_ERROR } from "src/app/components/Form"
 
 export type Detail =
@@ -32,10 +38,6 @@ export function ExpenseDetailsInputs({
     arrayHelpers.remove(index)
   }
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>, index: number, detail: Detail) => {
-    setFieldValue(`details[${index}].amount`, event.target.value)
-  }
-
   // Recalcul du total uniquement si les détails ont changé
   useEffect(() => {
     const total: number = values.details.reduce((accumulator, detail) => {
@@ -52,57 +54,81 @@ export function ExpenseDetailsInputs({
     <FieldArray
       name="details"
       render={(arrayHelpers) => (
-        <div {...outerProps}>
-          {values.details && values.details.length > 0
-            ? values.details.map((detail, index) => (
-                <div key={index}>
-                  <LabeledTextField
-                    name={"details[" + index + "].date"}
-                    label="Date"
-                    placeholder="Date"
-                    type="text"
-                  />
-                  <LabeledTextField
-                    name={"details[" + index + "].comment"}
-                    label="Commentaire"
-                    placeholder="Commentaire"
-                    type="text"
-                  />
-                  <LabeledTextField
-                    name={"details[" + index + "].amount"}
-                    label="Montant"
-                    placeholder="Montant"
-                    type="number"
-                    onChange={(event) => handleChange(event, index, detail)}
-                    value={detail.amount}
-                  />
-                  {
-                    // On ne peut pas supprimer le dernier élément
-                    values.details.length > 1 ? (
-                      <button
-                        type="button"
-                        onClick={() => handleRemove(arrayHelpers, index, detail)}
-                      >
-                        Supprimer le détail
-                      </button>
-                    ) : null
-                  }
-                </div>
-              ))
-            : null}
-          <button
-            type="button"
-            onClick={() =>
-              arrayHelpers.push({
-                value: 0,
-                date: new Date(),
-                comment: "",
-              })
-            }
-          >
-            Ajouter un détail
-          </button>
-        </div>
+        <>
+          <Stack divider={<Divider flexItem />} spacing={2}>
+            {values.details && values.details.length > 0
+              ? values.details.map((detail, index) => (
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1} key={index}>
+                    <Field
+                      component={DatePicker}
+                      name={"details[" + index + "].date"}
+                      label="Date de la dépense"
+                    />
+                    <Field
+                      component={TextField}
+                      name={"details[" + index + "].amount"}
+                      label="Montant"
+                      placeholder="Montant"
+                      type="number"
+                      helperText="Valeur négative pour indiquer un remboursement"
+                      InputProps={{
+                        endAdornment: <InputAdornment position="end">€</InputAdornment>,
+                      }}
+                    />
+                    <Field
+                      component={TextField}
+                      name={"details[" + index + "].comment"}
+                      label="Commentaire"
+                      placeholder="Commentaire"
+                      multiline
+                      sx={{ width: "100%" }}
+                    />
+                    {
+                      // On ne peut pas supprimer le dernier élément
+                      values.details.length > 1 ? (
+                        <div>
+                          <Button
+                            onClick={() => handleRemove(arrayHelpers, index, detail)}
+                            color="error"
+                            sx={{
+                              display: { xs: "none", sm: "inline-flex" },
+                              py: 2,
+                              lineHeight: 3,
+                            }}
+                            aria-label="supprimer détail"
+                            title="Supprimer le détail"
+                          >
+                            <Remove />
+                          </Button>
+                          <Button
+                            startIcon={<Remove />}
+                            onClick={() => handleRemove(arrayHelpers, index, detail)}
+                            color="error"
+                            sx={{ display: { xs: "inline-flex", sm: "none" } }}
+                            fullWidth
+                          >
+                            Supprimer le détail
+                          </Button>
+                        </div>
+                      ) : null
+                    }
+                  </Stack>
+                ))
+              : null}
+            <Button
+              startIcon={<Add />}
+              onClick={() =>
+                arrayHelpers.push({
+                  value: 0,
+                  date: dayjs() as any,
+                  comment: "",
+                })
+              }
+            >
+              Ajouter un détail
+            </Button>
+          </Stack>
+        </>
       )}
     />
   )

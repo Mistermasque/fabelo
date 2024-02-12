@@ -10,11 +10,8 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div>
-      <h1>Nouvelle dépense</h1>
-      <Suspense fallback={Loading()}>
-        <NewExpense />
-      </Suspense>
-    </div>
+    <Suspense fallback={Loading()}>
+      <NewExpense />
+    </Suspense>
   )
 }

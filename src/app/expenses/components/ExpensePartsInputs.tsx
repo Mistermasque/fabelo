@@ -1,6 +1,5 @@
-import { FieldArray, useFormikContext } from "formik"
-import React, { ChangeEvent, PropsWithoutRef, Suspense, useEffect, useState } from "react"
-import { LabeledTextField } from "src/app/components/LabeledTextField"
+import { Field, FieldArray, useFormikContext } from "formik"
+import React, { ChangeEvent, PropsWithoutRef, useEffect } from "react"
 import { CreateExpenseSchema, UpdateExpenseSchema } from "src/app/expenses/schemas"
 import { z } from "zod"
 import {
@@ -11,6 +10,8 @@ import { useUserParts } from "../hooks/useUserParts"
 import { useQuery } from "@blitzjs/rpc"
 import getUsers from "../../users/queries/getUsers"
 import { CreateExpenseDetailSchema, UpdateExpenseDetailSchema } from "../../expense-details/schemas"
+import { Box, Divider, InputAdornment, Stack } from "@mui/material"
+import { TextField } from "formik-mui"
 export { FORM_ERROR } from "src/app/components/Form"
 
 type PartType =
@@ -115,35 +116,50 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
     <FieldArray
       name="parts"
       render={() => (
-        <div {...outerProps}>
+        <Stack divider={<Divider flexItem />} spacing={2}>
           {parts.map((part, index) => (
-            <div key={index}>
-              <div>{part.user?.name}</div>
+            <Stack
+              alignItems={{ xs: "flex-start", sm: "center" }}
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1}
+              key={index}
+            >
+              <Box sx={{ width: { sm: "50%" }, flexGrow: 1 }}>
+                <strong>{part.user?.name}</strong>
+              </Box>
+
               <input name={"parts[" + index + "].userId"} type="hidden" value={part.userId} />
               <input
                 name={"parts[" + index + "].isAmount"}
                 type="hidden"
                 value={part.isAmount ? 1 : 0}
               />
-              <LabeledTextField
+              <Field
                 name={"parts[" + index + "].part"}
                 label="Part"
                 placeholder="Part"
                 type="number"
-                onChange={(e) => handleChangePart(e, index)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangePart(e, index)}
                 value={part.part}
+                component={TextField}
+                sx={{ width: { xs: "100%", sm: "15%" } }}
               />
-              <LabeledTextField
+              <Field
                 name={"parts[" + index + "].amount"}
                 label="Montant"
                 placeholder="Montant"
                 type="number"
-                onChange={(e) => handleChangeAmount(e, index)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeAmount(e, index)}
                 value={part.amount}
+                component={TextField}
+                sx={{ width: { xs: "100%", sm: "25%" } }}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">€</InputAdornment>,
+                }}
               />
-            </div>
+            </Stack>
           ))}
-        </div>
+        </Stack>
       )}
     />
   )

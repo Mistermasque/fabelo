@@ -1,4 +1,4 @@
-import { FieldArray, useFormikContext } from "formik"
+import { Field, FieldArray, useFormikContext } from "formik"
 import React, { useState } from "react"
 import { Form, FormProps } from "src/app/components/Form"
 import { LabeledSelectField } from "src/app/components/LabeledSelectField"
@@ -9,6 +9,8 @@ import { ExpensePartsInputs } from "./ExpensePartsInputs"
 import { useQuery } from "@blitzjs/rpc"
 import getUsers from "../../users/queries/getUsers"
 import LabeledCheckBoxField from "../../components/LabeledCheckBoxField"
+import { Chip, Stack, Typography } from "@mui/material"
+import { Checkbox, TextField } from "formik-mui"
 
 export { FORM_ERROR } from "src/app/components/Form"
 
@@ -29,16 +31,22 @@ export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
 
   return (
     <Form<S> {...props}>
-      <div>{totalAmount}</div>
-      <LabeledSelectField
-        name="userId"
-        label="Qui a payé"
-        options={users}
-        optionAttributeTitle="name"
-      />
-      <ExpenseDetailsInputs onUpdateTotalAmount={handleUpdateDetailAmount} />
-      <LabeledCheckBoxField name="isDefaultParts" label="Utiliser la répartition par défaut" />
-      <ExpensePartsInputs totalAmount={totalAmount} />
+      <Stack spacing={3}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+          <Field component={TextField} label="Titre" name="title" sx={{ flexGrow: 1 }} />
+          <LabeledSelectField
+            name="userId"
+            label="Qui a payé"
+            options={users}
+            optionAttributeTitle="name"
+          />
+        </Stack>
+        <ExpenseDetailsInputs onUpdateTotalAmount={handleUpdateDetailAmount} />
+
+        <Chip label={"Montant total : " + totalAmount + " €"} />
+        <LabeledCheckBoxField name="isDefaultParts" label="Utiliser la répartition par défaut" />
+        <ExpensePartsInputs totalAmount={totalAmount} />
+      </Stack>
     </Form>
   )
 }

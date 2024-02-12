@@ -1,8 +1,9 @@
 "use client"
-import { Box, CssBaseline, Stack } from "@mui/material"
+import { Box, CssBaseline, Stack, ThemeProvider } from "@mui/material"
 import { NavBar } from "@/src/app/components/layout/nav-bar/NavBar"
 import { TopBar, TopBarOffset } from "./nav-bar/TopBar"
 import { ReactNode, useState } from "react"
+import { theme } from "app/theme"
 
 export function PageLayout({ children }: { children: ReactNode }) {
   const [isNavBarOpened, setisNavBarOpened] = useState(false)
@@ -20,24 +21,26 @@ export function PageLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
 
-      <Stack direction="column">
-        <TopBar onNavBarToggle={handleNavBarToggle} />
-        <TopBarOffset />
-        <Stack direction="row">
-          <NavBar
-            open={isNavBarOpened}
-            onOpen={handleNavBarOpen}
-            onClose={handleNavBarClose}
-            onToggle={handleNavBarOpen}
-          />
-          <Box component="main" sx={{ p: 2 }}>
-            {children}
-          </Box>
+        <Stack direction="column" sx={{ width: "100%" }}>
+          <TopBar onNavBarToggle={handleNavBarToggle} />
+          <TopBarOffset />
+          <Stack direction="row">
+            <NavBar
+              open={isNavBarOpened}
+              onOpen={handleNavBarOpen}
+              onClose={handleNavBarClose}
+              onToggle={handleNavBarOpen}
+            />
+            <Box component="main" sx={{ p: 2, width: "100%" }}>
+              {children}
+            </Box>
+          </Stack>
         </Stack>
-      </Stack>
-    </Box>
+      </Box>
+    </ThemeProvider>
   )
 }

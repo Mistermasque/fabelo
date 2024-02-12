@@ -1,52 +1,48 @@
-import { ComponentPropsWithoutRef, forwardRef, PropsWithoutRef } from "react"
-import { useField, useFormikContext, ErrorMessage } from "formik"
+import {
+  ChangeEvent,
+  FocusEvent,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  PropsWithoutRef,
+} from "react"
+import { useField, useFormikContext } from "formik"
+import { Checkbox, CheckboxProps, FormControlLabel, FormControlLabelProps } from "@mui/material"
 
 export interface LabeledCheckBoxFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
   /** Field name. */
   name: string
   /** Field label. */
   label: string
-  outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
-  labelProps?: ComponentPropsWithoutRef<"label">
+  labelProps?: Omit<FormControlLabelProps, "control">
+
+  onChange?: (e: ChangeEvent<any>) => void
+  onBlur?: (e: FocusEvent<any, Element>) => void
 }
 
-export const LabeledCheckBoxField = forwardRef<HTMLInputElement, LabeledCheckBoxFieldProps>(
-  ({ name, label, outerProps, labelProps, ...props }, ref) => {
-    const [input] = useField(name)
-    const { isSubmitting } = useFormikContext()
+export const LabeledCheckBoxField = forwardRef<HTMLButtonElement, LabeledCheckBoxFieldProps>(
+  ({ name, label, labelProps, onChange, onBlur, ...props }, ref) => {
+    const [input] = useField({ name })
+    const { isSubmitting, handleBlur, handleChange } = useFormikContext()
+
+    const onChangeInput = onChange ? onChange : handleChange
+    const onBlurInput = onBlur ? onBlur : handleBlur
 
     return (
-      <div {...outerProps}>
-        <label {...labelProps}>
-          {label}
-          <input
-            {...input}
-            checked={input.value}
-            // onChange={() => {
-            //   const set = new Set(input.value)
-            //   if (set.has(props.value)) {
-            //     set.delete(props.value)
-            //   } else {
-            //     set.add(props.value)
-            //   }
-            //   field.onChange(field.name)(Array.from(set))
-            //   form.setFieldTouched(field.name, true)
-            // }}
-            disabled={isSubmitting}
-            type="checkbox"
-            {...props}
+      <FormControlLabel
+        label={label}
+        {...labelProps}
+        control={
+          <Checkbox
             ref={ref}
+            {...input}
+            {...(props as CheckboxProps)}
+            disabled={isSubmitting}
+            checked={input.value}
+            onChange={onChangeInput}
+            onBlur={onBlurInput}
           />
-        </label>
-
-        <ErrorMessage name={name}>
-          {(msg) => (
-            <div role="alert" style={{ color: "red" }}>
-              {msg}
-            </div>
-          )}
-        </ErrorMessage>
-      </div>
+        }
+      />
     )
   }
 )
