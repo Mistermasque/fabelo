@@ -7,7 +7,7 @@ export default resolver.pipe(
   resolver.authorize(),
   async (input) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const { details, parts, userId, isDefaultParts } = input
+    const { details, parts, userId, isDefaultParts, title } = input
 
     let createParts: {
       part?: number
@@ -47,7 +47,8 @@ export default resolver.pipe(
 
     const expense = await db.expense.create({
       data: {
-        isDefaultParts: isDefaultParts,
+        title,
+        isDefaultParts,
         user: { connect: { id: userId } },
         details: {
           create: details,

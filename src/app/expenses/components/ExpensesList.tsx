@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
 import { usePageTitle } from "../../hooks/usePageTitle"
+import { Chip, Divider, Grid, Stack, Typography } from "@mui/material"
 
 const ITEMS_PER_PAGE = 100
 
@@ -37,21 +38,25 @@ export const ExpensesList = () => {
   }
 
   return (
-    <div>
-      <ul>
-        {expenses.map((expense: ExpenseWithTotalAmount) => (
-          <li key={expense.id}>
-            <Link href={`/expenses/${expense.id}`}>{expense.totalAmount}</Link>
-          </li>
-        ))}
-      </ul>
-
-      <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button>
-    </div>
+    <Stack divider={<Divider flexItem />} spacing={2}>
+      {expenses.map((expense: ExpenseWithTotalAmount) => (
+        <Grid container key={expense.id} columns={2}>
+          <Grid item sm={1} xs={2}>
+            <Typography variant="h6" component="h2">
+              {expense.title}
+            </Typography>
+          </Grid>
+          <Grid item sm={1} xs={2}>
+            <Typography variant="h3">{"Montant : " + expense.totalAmount + " €"}</Typography>
+          </Grid>
+          <Grid item sm={1} xs={2}>
+            <Typography variant="h4">{"Payé par : " + expense.user.name}</Typography>
+          </Grid>
+          <Grid item sm={1} xs={2}>
+            {expense.refund ? <Chip label={"Remboursé le : " + expense.refund.createdAt} /> : null}
+          </Grid>
+        </Grid>
+      ))}
+    </Stack>
   )
 }

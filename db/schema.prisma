@@ -69,6 +69,7 @@ model Token {
 
 model Expense {
   id             Int      @id @default(autoincrement())
+  title          String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   isDefaultParts Boolean  @default(true)
@@ -90,7 +91,7 @@ model ExpenseDetail {
   updatedAt DateTime @updatedAt
   date      DateTime
   amount    Decimal
-  comment   String
+  comment   String?
 
   expense   Expense @relation(fields: [expenseId], references: [id])
   expenseId Int

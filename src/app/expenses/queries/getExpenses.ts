@@ -5,7 +5,9 @@ import db, { Prisma } from "db"
 interface GetExpensesInput
   extends Pick<Prisma.ExpenseFindManyArgs, "where" | "orderBy" | "skip" | "take"> {}
 
-export type ExpenseWithTotalAmount = Prisma.ExpenseGetPayload<{ include: { details: true } }> & {
+export type ExpenseWithTotalAmount = Prisma.ExpenseGetPayload<{
+  include: { details: true; refund: true; user: true }
+}> & {
   totalAmount?: number
 }
 
@@ -23,7 +25,12 @@ export default resolver.pipe(
       take,
       count: () => db.expense.count({ where }),
       query: (paginateArgs) =>
-        db.expense.findMany({ ...paginateArgs, where, orderBy, include: { details: true } }),
+        db.expense.findMany({
+          ...paginateArgs,
+          where,
+          orderBy,
+          include: { details: true, refund: true, user: true },
+        }),
     })
 
     expenses.map((expense: ExpenseWithTotalAmount) => {
