@@ -12,7 +12,7 @@ export interface NavBarProps {
 
 export function NavBar(props: NavBarProps) {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.up("sm"))
+  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"))
 
-  return isMobile ? <NavBarDesktop {...props} /> : <NavBarMobile {...props} />
+  return isDesktop ? <NavBarDesktop {...props} /> : <NavBarMobile {...props} />
 }

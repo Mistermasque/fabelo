@@ -27,7 +27,7 @@ export function TopBar({ onNavBarToggle }: TopBarProps) {
         >
           <Menu />
         </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
           {pageTitle}
         </Typography>
       </Toolbar>

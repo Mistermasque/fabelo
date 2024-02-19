@@ -22,6 +22,7 @@ export function NewExpense() {
 
   const initialValues: z.infer<typeof CreateExpenseSchema> = {
     isDefaultParts: true,
+    title: "",
     details: [
       {
         amount: 0,
@@ -44,7 +45,7 @@ export function NewExpense() {
       onSubmit={async (values) => {
         try {
           const expense = await createExpenseMutation(values)
-          router.push(`/expenses/${expense.id}`)
+          router.push("/expenses")
         } catch (error: any) {
           console.error(error)
           return {

@@ -6,7 +6,7 @@ interface GetExpensesInput
   extends Pick<Prisma.ExpenseFindManyArgs, "where" | "orderBy" | "skip" | "take"> {}
 
 export type ExpenseWithTotalAmount = Prisma.ExpenseGetPayload<{
-  include: { details: true; refund: true; user: true }
+  include: { details: true; refund: true; user: true; parts: { include: { user: true } } }
 }> & {
   totalAmount?: number
 }
@@ -29,7 +29,7 @@ export default resolver.pipe(
           ...paginateArgs,
           where,
           orderBy,
-          include: { details: true, refund: true, user: true },
+          include: { details: true, refund: true, user: true, parts: { include: { user: true } } },
         }),
     })
 

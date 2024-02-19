@@ -115,6 +115,7 @@ model Refund {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   comment     String?
+  date        DateTime?
   isValidated Boolean   @default(false)
   user        User      @relation(fields: [userId], references: [id])
   userId      Int

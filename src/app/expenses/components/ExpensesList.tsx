@@ -1,5 +1,5 @@
 "use client"
-import { usePaginatedQuery } from "@blitzjs/rpc"
+import { useMutation, usePaginatedQuery } from "@blitzjs/rpc"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import getExpenses, { ExpenseWithTotalAmount } from "../queries/getExpenses"
@@ -8,17 +8,31 @@ import { usePathname } from "next/navigation"
 import { Route } from "next"
 import { usePageTitle } from "../../hooks/usePageTitle"
 import { Chip, Divider, Grid, Stack, Typography } from "@mui/material"
+import { ExpenseItem } from "./ExpenseItem"
+import { useEffect } from "react"
+import deleteExpense from "../mutations/deleteExpense"
 
 const ITEMS_PER_PAGE = 100
 
 export const ExpensesList = () => {
   const { setPageTitle } = usePageTitle()
 
-  setPageTitle("Liste des dépenses")
+  const [deleteExpenseMutation] = useMutation(deleteExpense)
+
+  useEffect(() => {
+    setPageTitle("Liste des dépenses")
+  })
+
+  const handleDeleteExpense = async (id: number) => {
+    await deleteExpenseMutation({ id })
+    refetch()
+  }
+
+  const handleEditExpense = (id: number) => {}
 
   const searchparams = useSearchParams()!
   const page = Number(searchparams.get("page")) || 0
-  const [{ expenses, hasMore }] = usePaginatedQuery(getExpenses, {
+  const [{ expenses, hasMore }, { refetch }] = usePaginatedQuery(getExpenses, {
     orderBy: { id: "asc" },
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
@@ -38,24 +52,14 @@ export const ExpensesList = () => {
   }
 
   return (
-    <Stack divider={<Divider flexItem />} spacing={2}>
+    <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
       {expenses.map((expense: ExpenseWithTotalAmount) => (
-        <Grid container key={expense.id} columns={2}>
-          <Grid item sm={1} xs={2}>
-            <Typography variant="h6" component="h2">
-              {expense.title}
-            </Typography>
-          </Grid>
-          <Grid item sm={1} xs={2}>
-            <Typography variant="h3">{"Montant : " + expense.totalAmount + " €"}</Typography>
-          </Grid>
-          <Grid item sm={1} xs={2}>
-            <Typography variant="h4">{"Payé par : " + expense.user.name}</Typography>
-          </Grid>
-          <Grid item sm={1} xs={2}>
-            {expense.refund ? <Chip label={"Remboursé le : " + expense.refund.createdAt} /> : null}
-          </Grid>
-        </Grid>
+        <ExpenseItem
+          key={expense.id}
+          expense={expense}
+          onDelete={handleDeleteExpense}
+          onEdit={handleEditExpense}
+        />
       ))}
     </Stack>
   )
