@@ -11,6 +11,7 @@ import { Chip, Divider, Grid, Stack, Typography } from "@mui/material"
 import { ExpenseItem } from "./ExpenseItem"
 import { useEffect } from "react"
 import deleteExpense from "../mutations/deleteExpense"
+import { ExpensesFilterForm } from "./ExpensesFilterForms"
 
 const ITEMS_PER_PAGE = 100
 
@@ -52,15 +53,18 @@ export const ExpensesList = () => {
   }
 
   return (
-    <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
-      {expenses.map((expense: ExpenseWithTotalAmount) => (
-        <ExpenseItem
-          key={expense.id}
-          expense={expense}
-          onDelete={handleDeleteExpense}
-          onEdit={handleEditExpense}
-        />
-      ))}
-    </Stack>
+    <>
+      <ExpensesFilterForm onFilter={() => {}} initialValues={{}} />
+      <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
+        {expenses.map((expense: ExpenseWithTotalAmount) => (
+          <ExpenseItem
+            key={expense.id}
+            expense={expense}
+            onDelete={handleDeleteExpense}
+            onEdit={handleEditExpense}
+          />
+        ))}
+      </Stack>
+    </>
   )
 }

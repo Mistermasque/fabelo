@@ -21,3 +21,7 @@ export const UpdateExpenseSchema = CreateExpenseSchema.merge(
 export const DeleteExpenseSchema = z.object({
   id: z.number(),
 })
+
+export const FilterExpensesSchema = z.object({
+  isPaid: z.boolean().optional(),
+})
