@@ -12,6 +12,7 @@ import { ExpenseItem } from "./ExpenseItem"
 import { useEffect } from "react"
 import deleteExpense from "../mutations/deleteExpense"
 import { ExpensesFilterForm } from "./ExpensesFilterForms"
+import { SubMenuDrawerBox } from "../../components/layout/SubMenuDrawerBox"
 
 const ITEMS_PER_PAGE = 100
 
@@ -54,7 +55,9 @@ export const ExpensesList = () => {
 
   return (
     <>
-      <ExpensesFilterForm onFilter={() => {}} initialValues={{}} />
+      <SubMenuDrawerBox iconButton="Search">
+        <ExpensesFilterForm onFilter={() => {}} initialValues={{}} />
+      </SubMenuDrawerBox>
       <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
         {expenses.map((expense: ExpenseWithTotalAmount) => (
           <ExpenseItem
