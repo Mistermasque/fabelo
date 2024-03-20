@@ -16,13 +16,19 @@ export interface LabeledSelectFieldProps extends PropsWithoutRef<JSX.IntrinsicEl
   /** Field label. */
   label: string
   /** Field type. Doesn't include radio buttons and checkboxes */
-  options: { id: number; [key: string]: any }[]
-  /** Le nom de l'attribut dans les options à utiliser pour le titre */
-  optionAttributeTitle: string
+  options: {
+    [key: string]: any
+  }[]
+  /** Le nom de l'attribut dans les options à utiliser pour le titre default 'title' */
+  optionAttributeTitle?: string
+  /** Le nom de l'attribut dans les options à utiliser pour le titre default 'value' */
+  optionAttributeValue?: string
   formControlProps?: FormControlProps
   labelProps?: InputLabelProps
   id?: string
   helperText?: string
+  /** Le texte à afficher pour la valeur vide */
+  empty?: string
 }
 
 export const LabeledSelectField = forwardRef<HTMLSelectElement, LabeledSelectFieldProps>(
@@ -34,12 +40,16 @@ export const LabeledSelectField = forwardRef<HTMLSelectElement, LabeledSelectFie
       name,
       options,
       optionAttributeTitle,
+      optionAttributeValue,
       id,
       helperText,
+      empty,
       ...props
     },
     ref
   ) => {
+    const valAttr = optionAttributeValue ?? "value"
+    const titleAttr = optionAttributeTitle ?? "title"
     const [input, meta] = useField(name)
     const { isSubmitting, handleBlur, handleChange } = useFormikContext()
     const inputId = id ? id : Math.random().toString(16).slice(2)
@@ -61,10 +71,15 @@ export const LabeledSelectField = forwardRef<HTMLSelectElement, LabeledSelectFie
           onBlur={handleBlur}
           error={meta.touched && Boolean(meta.error)}
         >
+          {empty && (
+            <MenuItem value="">
+              <em>{empty}</em>
+            </MenuItem>
+          )}
           {options &&
             options.map((value) => (
-              <MenuItem value={value.id} key={value.id}>
-                {value[optionAttributeTitle]}
+              <MenuItem value={value[valAttr]} key={value[valAttr]}>
+                {value[titleAttr]}
               </MenuItem>
             ))}
         </Select>

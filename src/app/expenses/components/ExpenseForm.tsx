@@ -39,6 +39,7 @@ export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
             label="Qui a payé"
             options={users}
             optionAttributeTitle="name"
+            optionAttributeValue="id"
           />
         </Stack>
         <ExpenseDetailsInputs onUpdateTotalAmount={handleUpdateDetailAmount} />

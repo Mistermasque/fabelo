@@ -23,5 +23,9 @@ export const DeleteExpenseSchema = z.object({
 })
 
 export const FilterExpensesSchema = z.object({
-  isPaid: z.boolean().optional(),
+  isPaid: z.coerce.boolean().nullable().optional(),
+  payorId: z.coerce.number().nullable().optional(),
+  dateMin: z.coerce.date().nullable().optional(),
+  dateMax: z.coerce.date().nullable().optional(),
+  title: z.string().nullable().optional(),
 })

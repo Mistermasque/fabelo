@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
 import { usePageTitle } from "../../hooks/usePageTitle"
-import { Chip, Divider, Grid, Stack, Typography } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
 import { ExpenseItem } from "./ExpenseItem"
 import { useEffect } from "react"
 import deleteExpense from "../mutations/deleteExpense"
@@ -32,7 +32,25 @@ export const ExpensesList = () => {
 
   const handleEditExpense = (id: number) => {}
 
+  const handleFilter = async (values: any) => {
+    console.log("values", values)
+    // try {
+    //   const updated = await updateExpenseMutation({
+    //     ...values,
+    //     id: expense.id,
+    //   })
+    //   await setQueryData(updated)
+    //   router.refresh()
+    // } catch (error: any) {
+    //   console.error(error)
+    //   return {
+    //     [FORM_ERROR]: error.toString(),
+    //   }
+    // }
+  }
+
   const searchparams = useSearchParams()!
+
   const page = Number(searchparams.get("page")) || 0
   const [{ expenses, hasMore }, { refetch }] = usePaginatedQuery(getExpenses, {
     orderBy: { id: "asc" },
@@ -56,7 +74,7 @@ export const ExpensesList = () => {
   return (
     <>
       <SubMenuDrawerBox iconButton="Search">
-        <ExpensesFilterForm onFilter={() => {}} initialValues={{}} />
+        <ExpensesFilterForm onFilter={handleFilter} initialValues={{}} />
       </SubMenuDrawerBox>
       <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
         {expenses.map((expense: ExpenseWithTotalAmount) => (

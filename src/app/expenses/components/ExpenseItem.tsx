@@ -1,9 +1,7 @@
 import {
   Box,
-  Button,
   Chip,
   Collapse,
-  Divider,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -105,7 +103,7 @@ export const ExpenseItem = ({ expense, onDelete, onEdit }: ExpenseItemsProps) =>
         <Box>
           {isDesktop ? (
             <>
-              <Link href={`/expenses/${expense.id}/edit`} passHref>
+              <Link href={`/expenses/${expense.id}/edit`} passHref legacyBehavior>
                 <IconButton component="a">
                   <Edit />
                 </IconButton>

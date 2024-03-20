@@ -1,10 +1,12 @@
-import { Box, Button, Stack } from "@mui/material"
+import { Box, Button, MenuItem, Stack } from "@mui/material"
 import { FORM_ERROR, Form } from "app/components/Form"
-import { LabeledSelectField } from "app/components/LabeledSelectField"
 import { z } from "zod"
 import { FilterExpensesSchema } from "../schemas"
-import { useFormikContext } from "formik"
+import { Field, useFormikContext } from "formik"
 import { Search } from "@mui/icons-material"
+import { useQuery } from "@blitzjs/rpc"
+import getUsersList from "app/users/queries/getUsersList"
+import { SelectWithOptions } from "app/components/formik-mui-date-picker/SelectWithOptions"
 
 export { FORM_ERROR } from "app/components/Form"
 
@@ -29,16 +31,31 @@ function SubmitButton() {
 }
 
 export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFormProps) {
-  const options = [
+  const [users, {}] = useQuery(
+    getUsersList,
+    {},
     {
-      name: "toto",
-      id: 1,
+      staleTime: Infinity,
+    }
+  )
+
+  const isPaidOpts = [
+    {
+      title: "Remboursé",
+      value: 1,
     },
     {
-      name: "titi",
-      id: 2,
+      title: "Non remboursé",
+      value: 0,
     },
   ]
+
+  // Il faut définir des valeurs par défaut à null sinon on a une erreur de perte du contrôle de l'input
+  // https://github.com/stackworx/formik-mui/issues/236
+  initialValues = {
+    ...{ payorId: null, isPaid: null },
+    ...initialValues,
+  }
 
   return (
     <Form<typeof FilterExpensesSchema>
@@ -46,7 +63,7 @@ export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFo
       initialValues={initialValues}
       onSubmit={async (values) => {
         try {
-          onFilter(values)
+          await onFilter(values)
         } catch (error: any) {
           console.error(error)
           return {
@@ -56,26 +73,21 @@ export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFo
       }}
     >
       <Stack gap={1} direction={{ sm: "row", xs: "column" }} sx={{ m: 1 }} flexWrap="wrap">
-        <LabeledSelectField
+        <Field
+          component={SelectWithOptions}
           name="isPaid"
           label="Remboursé"
-          options={options}
-          optionAttributeTitle="name"
-          formControlProps={{ sx: { minWidth: 150 } }}
+          options={isPaidOpts}
+          empty="Tous"
+          formControl={{ sx: { minWidth: 150 } }}
         />
-        <LabeledSelectField
-          name="userId"
+        <Field
+          component={SelectWithOptions}
+          name="payorId"
           label="Payeur"
-          options={options}
-          optionAttributeTitle="name"
-          formControlProps={{ sx: { minWidth: 150 } }}
-        />
-        <LabeledSelectField
-          name="tri"
-          label="Trier par"
-          options={options}
-          optionAttributeTitle="name"
-          formControlProps={{ sx: { minWidth: 150 } }}
+          options={users}
+          empty="Tous"
+          formControl={{ sx: { minWidth: 150 } }}
         />
         <Box
           flexGrow="1"
