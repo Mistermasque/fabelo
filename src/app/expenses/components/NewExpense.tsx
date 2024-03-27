@@ -9,6 +9,7 @@ import { useCurrentUser } from "../../users/hooks/useCurrentUser"
 import { usePageTitle } from "../../hooks/usePageTitle"
 
 import dayjs from "dayjs"
+import { useEffect } from "react"
 
 export function NewExpense() {
   const [createExpenseMutation] = useMutation(createExpense)
@@ -16,8 +17,9 @@ export function NewExpense() {
   const user = useCurrentUser()
   const { setPageTitle } = usePageTitle()
 
-  setPageTitle("Nouvelle dépense")
-
+  useEffect(() => {
+    setPageTitle("Nouvelle dépense")
+  })
   const userId = user ? user.id : 0
 
   const initialValues: z.infer<typeof CreateExpenseSchema> = {

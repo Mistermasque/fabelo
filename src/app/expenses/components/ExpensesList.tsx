@@ -1,18 +1,21 @@
 "use client"
 import { useMutation, usePaginatedQuery } from "@blitzjs/rpc"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
-import getExpenses, { ExpenseWithTotalAmount } from "../queries/getExpenses"
 import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
-import { usePageTitle } from "../../hooks/usePageTitle"
+import { usePageTitle } from "app/hooks/usePageTitle"
 import { Divider, Stack } from "@mui/material"
 import { ExpenseItem } from "./ExpenseItem"
 import { useEffect } from "react"
 import deleteExpense from "../mutations/deleteExpense"
 import { ExpensesFilterForm } from "./ExpensesFilterForms"
-import { SubMenuDrawerBox } from "../../components/layout/SubMenuDrawerBox"
+import { SubMenuDrawerBox } from "app/components/layout/SubMenuDrawerBox"
+import { useSearchFilters } from "app/hooks/useSearchFilter"
+import getExpenses, {
+  ExpenseWithTotalAmount,
+  FilterExpensesWithTotalAmountType,
+} from "../queries/getExpensesWithTotalAmount"
 
 const ITEMS_PER_PAGE = 100
 
@@ -32,30 +35,25 @@ export const ExpensesList = () => {
 
   const handleEditExpense = (id: number) => {}
 
-  const handleFilter = async (values: any) => {
-    console.log("values", values)
-    // try {
-    //   const updated = await updateExpenseMutation({
-    //     ...values,
-    //     id: expense.id,
-    //   })
-    //   await setQueryData(updated)
-    //   router.refresh()
-    // } catch (error: any) {
-    //   console.error(error)
-    //   return {
-    //     [FORM_ERROR]: error.toString(),
-    //   }
-    // }
+  const handleFilter = async (values: FilterExpensesWithTotalAmountType) => {
+    const params = mergeURLParams(values)
+    router.push((pathname + "?" + params.toString()) as Route)
   }
 
   const searchparams = useSearchParams()!
+  const { mergeURLParams, getFiltersFromURL, getOrderByFromURL } =
+    useSearchFilters<FilterExpensesWithTotalAmountType>(
+      { payorId: "", isPaid: "", dateMin: null, dateMax: null, title: "" },
+      { title: "asc" }
+    )
 
   const page = Number(searchparams.get("page")) || 0
+  const orderBy = getOrderByFromURL()
   const [{ expenses, hasMore }, { refetch }] = usePaginatedQuery(getExpenses, {
-    orderBy: { id: "asc" },
+    orderBy: orderBy ?? undefined,
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
+    filter: getFiltersFromURL(["payorId", "isPaid", "dateMin", "dateMax", "title"]),
   })
   const router = useRouter()
   const pathname = usePathname()
@@ -74,7 +72,7 @@ export const ExpensesList = () => {
   return (
     <>
       <SubMenuDrawerBox iconButton="Search">
-        <ExpensesFilterForm onFilter={handleFilter} initialValues={{}} />
+        <ExpensesFilterForm onFilter={handleFilter} initialValues={getFiltersFromURL()} />
       </SubMenuDrawerBox>
       <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
         {expenses.map((expense: ExpenseWithTotalAmount) => (

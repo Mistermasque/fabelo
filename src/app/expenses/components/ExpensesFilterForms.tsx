@@ -1,18 +1,22 @@
-import { Box, Button, MenuItem, Stack } from "@mui/material"
+import { Box, Button, Stack } from "@mui/material"
 import { FORM_ERROR, Form } from "app/components/Form"
-import { z } from "zod"
-import { FilterExpensesSchema } from "../schemas"
 import { Field, useFormikContext } from "formik"
 import { Search } from "@mui/icons-material"
 import { useQuery } from "@blitzjs/rpc"
 import getUsersList from "app/users/queries/getUsersList"
-import { SelectWithOptions } from "app/components/formik-mui-date-picker/SelectWithOptions"
+import { SelectWithOptions } from "app/components/formik-mui/SelectWithOptions"
+import {
+  FilterExpensesWithTotalAmountSchema,
+  FilterExpensesWithTotalAmountType,
+} from "../queries/getExpensesWithTotalAmount"
+import { DatePicker } from "app/components/formik-mui/DatePicker"
+import { TextField } from "formik-mui"
 
 export { FORM_ERROR } from "app/components/Form"
 
 export interface ExpensesFilterFormProps {
-  initialValues: z.infer<typeof FilterExpensesSchema>
-  onFilter: (values: z.infer<typeof FilterExpensesSchema>) => void
+  initialValues: FilterExpensesWithTotalAmountType
+  onFilter: (values: FilterExpensesWithTotalAmountType) => void
 }
 
 function SubmitButton() {
@@ -42,24 +46,24 @@ export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFo
   const isPaidOpts = [
     {
       title: "Remboursé",
-      value: 1,
+      value: true,
     },
     {
       title: "Non remboursé",
-      value: 0,
+      value: false,
     },
   ]
 
   // Il faut définir des valeurs par défaut à null sinon on a une erreur de perte du contrôle de l'input
   // https://github.com/stackworx/formik-mui/issues/236
   initialValues = {
-    ...{ payorId: null, isPaid: null },
+    ...{ payorId: "", isPaid: "", dateMin: "", dateMax: "", title: "" },
     ...initialValues,
   }
 
   return (
-    <Form<typeof FilterExpensesSchema>
-      schema={FilterExpensesSchema}
+    <Form<typeof FilterExpensesWithTotalAmountSchema>
+      schema={FilterExpensesWithTotalAmountSchema}
       initialValues={initialValues}
       onSubmit={async (values) => {
         try {
@@ -89,6 +93,20 @@ export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFo
           empty="Tous"
           formControl={{ sx: { minWidth: 150 } }}
         />
+        <Field
+          component={DatePicker}
+          name="dateMin"
+          label="Date création min."
+          formControl={{ sx: { minWidth: 150 } }}
+          emptyLabel="custom label"
+        />
+        <Field
+          component={DatePicker}
+          name="dateMax"
+          label="Date création max."
+          formControl={{ sx: { minWidth: 150 } }}
+        />
+        <Field component={TextField} name="title" label="Titre contenant le texte" />
         <Box
           flexGrow="1"
           sx={{ display: "flex", py: 1 }}

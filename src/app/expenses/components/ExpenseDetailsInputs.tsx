@@ -1,6 +1,6 @@
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from "formik"
 import { TextField } from "formik-mui"
-import { DatePicker } from "@/src/app/components/formik-mui-date-picker/DatePicker"
+import { DatePicker } from "@/src/app/components/formik-mui/DatePicker"
 
 import React, { PropsWithoutRef, useEffect } from "react"
 import {

@@ -21,6 +21,10 @@ export function SelectWithOptions({
   const { children: formHelperTextChildren, ...formHelperTextProps } = formHelperText || {}
   const shouldDisplayFormHelperText = error || formHelperTextChildren
 
+  if (empty) {
+    selectFieldProps.displayEmpty = true
+  }
+
   return (
     <FormControl disabled={disabled} error={error} {...formControl}>
       <InputLabel id={selectFieldProps.labelId} {...inputLabel}>
