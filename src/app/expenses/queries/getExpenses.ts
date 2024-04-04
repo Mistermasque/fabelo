@@ -5,12 +5,6 @@ import db, { Prisma } from "db"
 interface GetExpensesInput
   extends Pick<Prisma.ExpenseFindManyArgs, "where" | "orderBy" | "skip" | "take"> {}
 
-export type ExpenseWithTotalAmount = Prisma.ExpenseGetPayload<{
-  include: { details: true; refund: true; user: true; parts: { include: { user: true } } }
-}> & {
-  totalAmount?: number
-}
-
 export default resolver.pipe(
   resolver.authorize(),
   async ({ where, orderBy, skip = 0, take = 100 }: GetExpensesInput) => {
@@ -31,13 +25,6 @@ export default resolver.pipe(
           orderBy,
           include: { details: true, refund: true, user: true, parts: { include: { user: true } } },
         }),
-    })
-
-    expenses.map((expense: ExpenseWithTotalAmount) => {
-      const totalAmount = expense?.details.reduce((accumulator, detail) => {
-        return accumulator + Number(detail.amount)
-      }, 0)
-      expense.totalAmount = totalAmount
     })
 
     return {

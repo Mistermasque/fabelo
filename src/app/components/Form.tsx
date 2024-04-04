@@ -5,7 +5,9 @@ import { z } from "zod"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import "dayjs/locale/fr"
 import { LocalizationProvider } from "@mui/x-date-pickers"
-import { Button, Box, Stack } from "@mui/material"
+import { Stack, Alert } from "@mui/material"
+import { LoadingButton } from "@mui/lab"
+import { Save } from "@mui/icons-material"
 
 export interface FormProps<S extends z.ZodType<any, any>>
   extends Omit<PropsWithoutRef<JSX.IntrinsicElements["form"]>, "onSubmit"> {
@@ -40,13 +42,16 @@ export function Form<S extends z.ZodType<any, any>>({
         initialValues={initialValues || {}}
         validate={validateZodSchema(schema)}
         onSubmit={async (values, { setErrors }) => {
+          console.log("form sent data", values)
           const { FORM_ERROR, ...otherErrors } = (await onSubmit(values)) || {}
 
           if (FORM_ERROR) {
+            console.log("FORM_ERROR", FORM_ERROR)
             setFormError(FORM_ERROR)
           }
 
           if (Object.keys(otherErrors).length > 0) {
+            console.log("form errors", otherErrors)
             setErrors(otherErrors)
           }
         }}
@@ -57,22 +62,22 @@ export function Form<S extends z.ZodType<any, any>>({
             {children}
 
             <Stack spacing={2} sx={{ mt: 3 }}>
-              {formError && (
-                <div role="alert" style={{ color: "red" }}>
-                  {formError}
-                </div>
-              )}
+              {formError && <Alert severity="error">{formError}</Alert>}
 
               {submitText && (
                 <Stack direction="row" justifyContent="flex-end">
-                  <Button
+                  <LoadingButton
                     variant="contained"
                     type="submit"
                     sx={{ width: { xs: "100%", sm: "auto" } }}
-                    disabled={isSubmitting}
+                    loading={isSubmitting}
+                    loadingPosition="start"
+                    startIcon={<Save />}
                   >
-                    {submitText}
-                  </Button>
+                    {/* Permet d'éviter le crash du translator chrome
+                    voir : https://mui.com/material-ui/react-button/#loading-button */}
+                    <span>{submitText}</span>
+                  </LoadingButton>
                 </Stack>
               )}
             </Stack>

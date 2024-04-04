@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { Suspense } from "react"
 import { NewExpense } from "../components/NewExpense"
-import Loading from "@/src/app/loading"
+import Loading from "app/loading"
 
 export const metadata: Metadata = {
   title: "Nouvelle dépense",

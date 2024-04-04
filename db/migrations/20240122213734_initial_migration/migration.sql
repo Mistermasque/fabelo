@@ -62,7 +62,7 @@ CREATE TABLE
     "userId" INTEGER NOT NULL,
     "refundId" INTEGER,
     CONSTRAINT "Expense_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "Expense_refundId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT "Expense_refundId_fkey" FOREIGN KEY ("refundId") REFERENCES "Refund" ("id") ON DELETE SET NULL ON UPDATE CASCADE
   );
 
 CREATE TABLE

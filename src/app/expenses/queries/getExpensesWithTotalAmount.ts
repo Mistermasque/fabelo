@@ -26,7 +26,7 @@ export type FilterExpensesWithTotalAmountType = z.infer<typeof FilterExpensesWit
 
 interface GetExpensesWithTotalAmountInput
   extends Pick<Prisma.ExpenseFindManyArgs, "where" | "orderBy" | "skip" | "take"> {
-  filter: FilterExpensesWithTotalAmountType
+  filter?: FilterExpensesWithTotalAmountType
 }
 
 export type ExpenseWithTotalAmount = Prisma.ExpenseGetPayload<{
@@ -72,12 +72,17 @@ function convertFilterToWhereClause(
 
 export default resolver.pipe(
   resolver.authorize(),
-  async ({ filter, orderBy, skip = 0, take = 100 }: GetExpensesWithTotalAmountInput) => {
+  async ({ where, filter, orderBy, skip = 0, take = 100 }: GetExpensesWithTotalAmountInput) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
 
     // Validate the input
     const parsedFilters = FilterExpensesWithTotalAmountSchema.safeParse(filter)
-    const where = parsedFilters.success ? convertFilterToWhereClause(parsedFilters.data) : {}
+    if (parsedFilters.success) {
+      where = {
+        ...convertFilterToWhereClause(parsedFilters.data),
+        ...where,
+      }
+    }
 
     const {
       items: expenses,

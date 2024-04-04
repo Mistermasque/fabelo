@@ -20,7 +20,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material"
-import { ExpenseWithTotalAmount } from "../queries/getExpenses"
+import { ExpenseWithTotalAmount } from "../queries/getExpensesWithTotalAmount"
 import { Delete, Edit, ExpandMore, MoreVert, Remove } from "@mui/icons-material"
 import { useState, MouseEvent } from "react"
 import { useConfirm } from "material-ui-confirm"
@@ -82,7 +82,7 @@ export const ExpenseItem = ({ expense, onDelete, onEdit }: ExpenseItemsProps) =>
           alignItems={{ xs: "flex-start", sm: "center" }}
         >
           <Typography variant="h5" component="h2">
-            {expense.title}
+            {expense.details[0].date.toLocaleDateString() + " - " + expense.title}
           </Typography>
           {expense.refund ? (
             <Chip

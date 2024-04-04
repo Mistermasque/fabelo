@@ -28,12 +28,12 @@ const sections: SectionType[] = [
       {
         title: "Créer un remboursement",
         icon: <NoteAdd />,
-        path: "#",
+        path: "/refunds/new",
       },
       {
         title: "Liste des remboursements",
         icon: <FactCheck />,
-        path: "#",
+        path: "/refunds",
       },
     ],
   },
