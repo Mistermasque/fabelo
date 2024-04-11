@@ -12,7 +12,7 @@ export function SubMenuButton(props: SubMenuButtonProps) {
 
   const [menu] = useSubMenu()
 
-  if (menu?.icon === false) {
+  if (menu === undefined || menu?.icon === false) {
     return null
   }
 

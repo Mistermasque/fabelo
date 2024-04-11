@@ -5,7 +5,7 @@ export type SubMenuType = {
   onClick?: () => void
 }
 
-const initialState: SubMenuType = { icon: "MoreVert" }
+const initialState: SubMenuType = { icon: false }
 
 const { useGlobalState } = createGlobalState({ subMenu: initialState })
 
