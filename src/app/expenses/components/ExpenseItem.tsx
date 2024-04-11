@@ -1,4 +1,13 @@
 import {
+  ChevronLeft,
+  ChevronRight,
+  Delete,
+  Edit,
+  ExpandLess,
+  ExpandMore,
+  MoreVert,
+} from "@mui/icons-material"
+import {
   Box,
   Chip,
   Collapse,
@@ -9,6 +18,7 @@ import {
   MenuItem,
   Paper,
   Stack,
+  SvgIcon,
   Table,
   TableBody,
   TableCell,
@@ -20,49 +30,187 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material"
-import { ExpenseWithTotalAmount } from "../queries/getExpensesWithTotalAmount"
-import { Delete, Edit, ExpandMore, MoreVert, Remove } from "@mui/icons-material"
-import { useState, MouseEvent } from "react"
+import Grid from "@mui/material/Unstable_Grid2"
+import { Prisma } from "@prisma/client"
+import { ExpenseWithTotalAmount } from "app/expenses/queries/getExpensesWithTotalAmount"
 import { useConfirm } from "material-ui-confirm"
 import Link from "next/link"
+import router from "next/router"
+import { useState, MouseEvent } from "react"
 
-export interface ExpenseItemsProps {
+interface ExpenseItemProps {
   expense: ExpenseWithTotalAmount
-  onDelete: (id: number) => void
-  onEdit: (id: number) => void
+  onDelete?: (id: number) => void
+  editable?: boolean
 }
 
-export const ExpenseItem = ({ expense, onDelete, onEdit }: ExpenseItemsProps) => {
+export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [menuAnchorElt, setMenuAnchorElt] = useState<null | HTMLElement>(null)
-  const confirm = useConfirm()
 
-  const theme = useTheme()
-  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"))
+  const moreInfos = MoreInfos({ expense })
 
-  const isMenuOpened = Boolean(menuAnchorElt)
-
-  const handleToggleDetails = () => {
+  const handleToggleMoreInfos = () => {
     setIsExpanded(!isExpanded)
   }
 
-  const handleClickDelete = () => {
-    handleMenuClose()
-    confirm({
-      title: "Êtes-vous sûr ?",
-      description: "Cette action supprimera la dépense sans possibiltié de récupération !",
-      cancellationText: "Annuler",
-      confirmationText: "Oui, supprimer",
-      confirmationButtonProps: { color: "error" },
-    }).then(() => {
-      onDelete(expense.id)
-    })
+  return (
+    <Grid container spacing={2} sx={{ width: "100%" }}>
+      <Grid container xs={9}>
+        <Grid
+          container
+          spacing={0}
+          columnSpacing={1}
+          alignItems="flex-start"
+          alignContent="flex-start"
+          flexWrap="nowrap"
+          sx={{ cursor: moreInfos ? "pointer" : "inherit" }}
+          className="MuiListItemButton-root"
+          onClick={handleToggleMoreInfos}
+        >
+          <Grid>
+            {moreInfos ? (
+              <SvgIcon
+                sx={{
+                  transform: isExpanded ? "rotate(90deg)" : "none",
+                  transition: "transform 330ms ease-in-out",
+                }}
+              >
+                <ChevronRight />
+              </SvgIcon>
+            ) : null}
+          </Grid>
+          <Grid>
+            <Typography variant="body1" component="h2">
+              <strong>{expense.title}</strong>
+            </Typography>
+          </Grid>
+        </Grid>
+        <Grid container alignItems="center" xs={12}>
+          <Grid>
+            <Typography variant="body1" component="em">
+              {"Payé par : " + expense.user.name}
+            </Typography>
+          </Grid>
+          <Grid>
+            <RefundDate refund={expense?.refund} />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={0}
+        xs={3}
+        direction={{ xs: "row-reverse", sm: "column" }}
+        alignItems={{ xs: "center", sm: "flex-end" }}
+        alignContent={{ xs: "space-between", sm: "flex-end" }}
+        justifyContent={{ xs: "flex-start", sm: "space-between" }}
+      >
+        <Grid>
+          <ActionMenu id={expense.id} onDelete={onDelete} editable={editable} />
+        </Grid>
+        <Grid>
+          <Chip
+            variant="outlined"
+            label={expense.totalAmount + " €"}
+            color={expense.totalAmount >= 0 ? "error" : "success"}
+          />
+        </Grid>
+      </Grid>
+
+      <Grid xs={12}>
+        <Collapse in={isExpanded}>{moreInfos}</Collapse>
+      </Grid>
+    </Grid>
+  )
+}
+
+interface ActionMenuProps {
+  id: number
+  onDelete?: (id: number) => void
+  editable?: boolean
+}
+
+/**
+ * Composant permettant d'afficher le menu d'action pour l'édition ou la suppresion de l'item
+ * @param param0 Composant
+ */
+function ActionMenu({ id, editable, onDelete }: ActionMenuProps) {
+  const theme = useTheme()
+  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"))
+  const confirm = useConfirm()
+
+  if (!editable && !onDelete) {
+    return null
   }
 
-  const handleClickEdit = () => {
-    handleMenuClose()
-    onEdit(expense.id)
+  const handleClickDelete = onDelete
+    ? () => {
+        confirm({
+          title: "Êtes-vous sûr ?",
+          description: "Cette action supprimera la dépense sans possibiltié de récupération !",
+          cancellationText: "Annuler",
+          confirmationText: "Oui, supprimer",
+          confirmationButtonProps: { color: "error" },
+        }).then(() => {
+          onDelete(id)
+        })
+      }
+    : undefined
+
+  return (
+    <>
+      {isDesktop ? (
+        <ActionMenuDesktop id={id} editable={editable} onDelete={handleClickDelete} />
+      ) : (
+        <ActionMenuMobile id={id} editable={editable} onDelete={handleClickDelete} />
+      )}
+    </>
+  )
+}
+
+/**
+ * Composant permettant d'afficher les boutons d'action pour la dépense pour l'affichage Desktop
+ */
+function ActionMenuDesktop({ id, editable, onDelete }: ActionMenuProps) {
+  return (
+    <Box>
+      {editable ? (
+        <Link href={`/expenses/${id}/edit`} passHref legacyBehavior>
+          <IconButton component="a">
+            <Edit />
+          </IconButton>
+        </Link>
+      ) : null}
+      {onDelete ? (
+        <IconButton color="error" onClick={() => onDelete(id)}>
+          <Delete />
+        </IconButton>
+      ) : null}
+    </Box>
+  )
+}
+
+/**
+ * Composant permettant d'afficher les boutons sous forme d'un menu pour l'affichage mobile
+ */
+function ActionMenuMobile({ id, editable, onDelete }: ActionMenuProps) {
+  const [menuAnchorElt, setMenuAnchorElt] = useState<null | HTMLElement>(null)
+
+  let numberOfActiveActions = 0
+
+  if (editable) {
+    numberOfActiveActions++
   }
+
+  if (onDelete) {
+    numberOfActiveActions++
+  }
+
+  if (numberOfActiveActions == 1) {
+    return ActionMenuDesktop({ id, editable, onDelete })
+  }
+
+  const isMenuOpened = Boolean(menuAnchorElt)
 
   const handleClickMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorElt(event.currentTarget)
@@ -72,141 +220,160 @@ export const ExpenseItem = ({ expense, onDelete, onEdit }: ExpenseItemsProps) =>
     setMenuAnchorElt(null)
   }
 
-  return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={1} alignItems={{ xs: "flex-start", sm: "center" }}>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          flexGrow={1}
-          spacing={2}
-          alignItems={{ xs: "flex-start", sm: "center" }}
-        >
-          <Typography variant="h5" component="h2">
-            {expense.details[0].date.toLocaleDateString() + " - " + expense.title}
-          </Typography>
-          {expense.refund ? (
-            <Chip
-              color={expense.refund.isValidated ? "success" : undefined}
-              label={
-                expense.refund.date
-                  ? "Remboursé le : " + expense.refund.date
-                  : "En attente remboursement"
-              }
-            />
-          ) : (
-            <Chip variant="outlined" label="Non remboursé" />
-          )}
-        </Stack>
-        <Typography variant="h5">
-          <strong>{expense.totalAmount + " €"}</strong>
-        </Typography>
-        <Box>
-          {isDesktop ? (
-            <>
-              <Link href={`/expenses/${expense.id}/edit`} passHref legacyBehavior>
-                <IconButton component="a">
-                  <Edit />
-                </IconButton>
-              </Link>
-              <IconButton color="error" onClick={handleClickDelete}>
-                <Delete />
-              </IconButton>
-            </>
-          ) : (
-            <>
-              <IconButton onClick={handleClickMenu}>
-                <MoreVert />
-              </IconButton>
-              <Menu open={isMenuOpened} onClose={handleMenuClose} anchorEl={menuAnchorElt}>
-                <Link href={`/expenses/${expense.id}/edit`} passHref legacyBehavior>
-                  <MenuItem onClick={handleClickEdit}>
-                    <ListItemIcon>
-                      <Edit />
-                    </ListItemIcon>
-                    <ListItemText>Editer</ListItemText>
-                  </MenuItem>
-                </Link>
-                <MenuItem onClick={handleClickDelete}>
-                  <ListItemIcon>
-                    <Delete />
-                  </ListItemIcon>
-                  <ListItemText>Supprimer</ListItemText>
-                </MenuItem>
-              </Menu>
-            </>
-          )}
-        </Box>
-      </Stack>
-      <Stack direction="row" spacing={2} alignItems="center">
-        <ToggleButton
-          size="small"
-          value="isExpanded"
-          selected={isExpanded}
-          onChange={handleToggleDetails}
-        >
-          <ExpandMore />
-        </ToggleButton>
-        <Typography variant="subtitle1">{"Payé par : " + expense.user.name}</Typography>
-      </Stack>
-      <Collapse in={isExpanded}>
-        <Stack spacing={1}>
-          <Paper>
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      Détails
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Commentaire</TableCell>
-                    <TableCell>Montant</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {expense.details.map((detail, index) => (
-                    <TableRow hover key={index}>
-                      <TableCell>{detail.date.toLocaleDateString()}</TableCell>
+  const handleClickEdit = () => {
+    handleMenuClose()
+    router.push(`/expenses/${id}/edit`)
+  }
 
-                      <TableCell>{detail.comment}</TableCell>
-                      <TableCell>{detail.amount + " €"}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-          <Paper>
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      Parts
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>Qui</TableCell>
-                    <TableCell>Part</TableCell>
-                    <TableCell>Montant</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {expense.parts.map((part, index) => (
-                    <TableRow hover key={index}>
-                      <TableCell>{part.user.name}</TableCell>
-                      <TableCell>{part.part?.toString()}</TableCell>
-                      <TableCell>{part.amount + " €"}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Stack>
-      </Collapse>
+  const handleClickDelete = () => {
+    handleMenuClose()
+    if (onDelete) {
+      onDelete(id)
+    }
+  }
+
+  return (
+    <Box>
+      <IconButton onClick={handleClickMenu}>
+        <MoreVert />
+      </IconButton>
+      <Menu open={isMenuOpened} onClose={handleMenuClose} anchorEl={menuAnchorElt}>
+        <MenuItem onClick={handleClickEdit}>
+          <ListItemIcon>
+            <Edit />
+          </ListItemIcon>
+          <ListItemText>Editer</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleClickDelete}>
+          <ListItemIcon>
+            <Delete />
+          </ListItemIcon>
+          <ListItemText>Supprimer</ListItemText>
+        </MenuItem>
+      </Menu>
+    </Box>
+  )
+}
+
+interface RefundDateProps {
+  refund?: Prisma.RefundGetPayload<{}> | null
+}
+
+function RefundDate({ refund }: RefundDateProps) {
+  if (refund === undefined) {
+    return null
+  }
+
+  if (refund === null) {
+    return <Chip variant="outlined" label="Non remboursé" />
+  }
+
+  return (
+    <Chip
+      color={refund.isValidated ? "success" : "primary"}
+      label={
+        refund.date ? "Remboursé le : " + refund.date.toLocaleString() : "En attente remboursement"
+      }
+    />
+  )
+}
+
+interface MoreInfosProps {
+  expense: ExpenseWithTotalAmount
+}
+
+/**
+ * Affichage des détails
+ * @param param0
+ */
+function MoreInfos({ expense }: MoreInfosProps) {
+  if (!expense.details && !expense.parts) {
+    return null
+  }
+
+  return (
+    <Stack direction={{ xs: "column", md: "row" }} spacing={{ xs: 2, md: 1 }}>
+      <Details details={expense.details} />
+      <Parts parts={expense.parts} />
     </Stack>
+  )
+}
+interface DetailsProps {
+  details?: Prisma.ExpenseDetailGetPayload<{}>[] | null
+}
+function Details({ details }: DetailsProps) {
+  if (!details) {
+    return null
+  }
+
+  return (
+    <Paper>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell colSpan={3} align="center">
+                Détails
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Date</TableCell>
+              <TableCell>Commentaire</TableCell>
+              <TableCell>Montant</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {details.map((detail, index) => (
+              <TableRow hover key={index}>
+                <TableCell>{detail.date.toLocaleDateString()}</TableCell>
+
+                <TableCell>{detail.comment}</TableCell>
+                <TableCell>{detail.amount + " €"}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  )
+}
+
+interface PartsProps {
+  parts?: Prisma.ExpenseUserPartGetPayload<{ include: { user: true } }>[] | null
+}
+
+function Parts({ parts }: PartsProps) {
+  if (!parts) {
+    return null
+  }
+
+  return (
+    <Paper>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell colSpan={3} align="center">
+                Parts
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Qui</TableCell>
+              <TableCell>Part</TableCell>
+              <TableCell>Montant</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {parts.map((part, index) => (
+              <TableRow hover key={index}>
+                <TableCell>{part.user.name}</TableCell>
+                <TableCell>{part.part?.toString()}</TableCell>
+                <TableCell>{part.amount + " €"}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   )
 }

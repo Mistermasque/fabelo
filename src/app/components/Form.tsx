@@ -74,8 +74,6 @@ export function Form<S extends z.ZodType<any, any>>({
                     loadingPosition="start"
                     startIcon={<Save />}
                   >
-                    {/* Permet d'éviter le crash du translator chrome
-                    voir : https://mui.com/material-ui/react-button/#loading-button */}
                     <span>{submitText}</span>
                   </LoadingButton>
                 </Stack>

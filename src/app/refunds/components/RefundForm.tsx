@@ -82,7 +82,7 @@ export function RefundForm<S extends z.ZodType<any, any>>({
         <ExpensesListInput
           expenses={expenses}
           onChange={(expenseIds) => handleChange(expenseIds)}
-          readonly={isNew}
+          readonly={!isNew}
         />
       </Stack>
     </Form>

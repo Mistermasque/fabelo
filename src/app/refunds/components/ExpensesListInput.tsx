@@ -1,55 +1,19 @@
 import {
   Alert,
   Button,
-  Chip,
   Divider,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   Stack,
-  Typography,
 } from "@mui/material"
-import Grid from "@mui/material/Unstable_Grid2"
-import getExpensesWithTotalAmount, {
-  ExpenseWithTotalAmount,
-} from "app/expenses/queries/getExpensesWithTotalAmount"
+import { ExpenseWithTotalAmount } from "app/expenses/queries/getExpensesWithTotalAmount"
 import { Field, useFormikContext } from "formik"
 import { CreateRefundSchema, UpdateRefundSchema } from "../schemas"
 import { z } from "zod"
-import { useQuery } from "@blitzjs/rpc"
 import { Checkbox } from "formik-mui"
-
-function ExpenseItem({ expense }: { expense: ExpenseWithTotalAmount }) {
-  return (
-    <Grid container sx={{ width: "100%" }} columnSpacing={{ xs: 2, sm: 1 }}>
-      <Grid container columnSpacing={1} xs={9}>
-        <Grid>
-          <Typography variant="body1" component="h2">
-            <strong>{expense.title}</strong>
-          </Typography>
-        </Grid>
-        <Grid>
-          <Typography variant="body1" component="span">
-            {expense.details[0].date.toLocaleDateString()}
-          </Typography>
-        </Grid>
-        <Grid xs={12}>
-          <Typography variant="body1" component="em">
-            {"Payé par : " + expense.user.name}
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid xs={3} container alignContent="flex-start" justifyContent="flex-end">
-        <Chip
-          variant="outlined"
-          label={expense.totalAmount + " €"}
-          color={expense.totalAmount >= 0 ? "error" : "success"}
-        />
-      </Grid>
-    </Grid>
-  )
-}
+import { ExpenseItem } from "app/expenses/components/ExpenseItem"
 
 export interface ExpensesListInputProps {
   expenses: ExpenseWithTotalAmount[]

@@ -33,8 +33,6 @@ export const ExpensesList = () => {
     refetch()
   }
 
-  const handleEditExpense = (id: number) => {}
-
   const handleFilter = async (values: FilterExpensesWithTotalAmountType) => {
     const params = mergeURLParams(values)
     router.push((pathname + "?" + params.toString()) as Route)
@@ -76,12 +74,7 @@ export const ExpensesList = () => {
       </SubMenuDrawerBox>
       <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
         {expenses.map((expense: ExpenseWithTotalAmount) => (
-          <ExpenseItem
-            key={expense.id}
-            expense={expense}
-            onDelete={handleDeleteExpense}
-            onEdit={handleEditExpense}
-          />
+          <ExpenseItem key={expense.id} expense={expense} onDelete={handleDeleteExpense} editable />
         ))}
       </Stack>
     </>
