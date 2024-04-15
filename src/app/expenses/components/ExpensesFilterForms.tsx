@@ -5,18 +5,15 @@ import { Search } from "@mui/icons-material"
 import { useQuery } from "@blitzjs/rpc"
 import getUsersList from "app/users/queries/getUsersList"
 import { SelectWithOptions } from "app/components/formik-mui/SelectWithOptions"
-import {
-  FilterExpensesWithTotalAmountSchema,
-  FilterExpensesWithTotalAmountType,
-} from "../queries/getExpensesWithTotalAmount"
+import { FilterExpensesSchema, FilterExpensesType } from "../queries/getExpenses"
 import { DatePicker } from "app/components/formik-mui/DatePicker"
 import { TextField } from "formik-mui"
 
 export { FORM_ERROR } from "app/components/Form"
 
 export interface ExpensesFilterFormProps {
-  initialValues: FilterExpensesWithTotalAmountType
-  onFilter: (values: FilterExpensesWithTotalAmountType) => void
+  initialValues: FilterExpensesType
+  onFilter: (values: FilterExpensesType) => void
 }
 
 function SubmitButton() {
@@ -62,8 +59,8 @@ export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFo
   }
 
   return (
-    <Form<typeof FilterExpensesWithTotalAmountSchema>
-      schema={FilterExpensesWithTotalAmountSchema}
+    <Form<typeof FilterExpensesSchema>
+      schema={FilterExpensesSchema}
       initialValues={initialValues}
       onSubmit={async (values) => {
         try {

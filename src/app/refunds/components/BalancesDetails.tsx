@@ -1,7 +1,7 @@
 import { Forward } from "@mui/icons-material"
-import { Alert, Divider, List, ListItem, Paper, Stack, Theme, Typography } from "@mui/material"
+import { Alert, Divider, Stack, Theme, Typography } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2"
-import { Balance } from "app/util/calculateBalance"
+import { Balance } from "@/db/computeBalances"
 import { Fragment } from "react"
 
 export interface BalancesDetailsProps {

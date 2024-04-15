@@ -1,14 +1,48 @@
-import { User } from "@prisma/client"
-import { ExpenseWithTotalAmount } from "app/expenses/queries/getExpensesWithTotalAmount"
+import { Decimal } from "@prisma/client/runtime/library"
+import { WithTotalAmount } from "./computeTotalAmount"
 
 type UserId = number
+
+type User = {
+  id: UserId
+  name: string | null
+}
+
+// Le type balance
 export type Balance = {
+  user: User // L'utilisateur
+  totalPaid: number // le montant total payé par l'utilisateur pour toutes les dépenses
+  totalPart: number // la part totale de l'utilisateur pour les dépenses
+  balance: number // le montant pour que l'utilisateur arrive à l'équilibre.
+  // - si négative l'utilisateur doit de l'argent au groupe
+  // - si positive l'utilisateur doit recevoir de l'argent du groupe
+  reimburseTo: {
+    user: User /* L'utilisateur à rembourser */
+    amount: number /* le montant à rembourser */
+  }[] //  Liste des utilisateurs et des montants à rembourser (si balance négative)
+  reimburseFrom: {
+    user: User /* L'utilisateur qui rembourse */
+    amount: number /* le montant qui doit être remboursé */
+  }[]
+}
+
+// Le type de retour contenant les balances
+export type WithBalances<T> = T & {
+  balances: Balance[]
+}
+
+type ExpenseWithPartAndTotalAmount = WithTotalAmount<{
+  userId: UserId
   user: User
-  totalPaid: number
-  totalPart: number
-  balance: number
-  reimburseTo: { user: User; amount: number }[]
-  reimburseFrom: { user: User; amount: number }[]
+  parts: {
+    user: User
+    userId: UserId
+    amount: Decimal | number
+  }[]
+}>
+
+type RefundWithExpenseDetails = {
+  expenses: ExpenseWithPartAndTotalAmount[]
 }
 
 /**
@@ -41,7 +75,7 @@ export type Balance = {
  *  }
  * ]
  */
-export function calculateBalance(expenses: ExpenseWithTotalAmount[]): Balance[] {
+export function calculateBalance(expenses: ExpenseWithPartAndTotalAmount[]): Balance[] {
   const balances = new Map<UserId, Balance>()
 
   function addUser(user: User, { paid = 0, part = 0 }: { paid?: number; part?: number }) {
@@ -140,4 +174,18 @@ function compare(a: Balance, b: Balance) {
     return 1
   }
   return 0
+}
+
+/**
+ * Fonction permettant d'ajouter les balances
+ * @param refund : le remboursement
+ * @returns l'objet refund avec le champ balances
+ */
+export default function computeBalances<Refund extends RefundWithExpenseDetails>(
+  refund: Refund
+): WithBalances<Refund> {
+  return {
+    ...refund,
+    balances: calculateBalance(refund.expenses),
+  }
 }

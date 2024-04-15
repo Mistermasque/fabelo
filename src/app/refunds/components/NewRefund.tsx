@@ -5,17 +5,16 @@ import { useMutation, useQuery } from "@blitzjs/rpc"
 import createRefund from "../mutations/createRefund"
 import { useRouter } from "next/navigation"
 import dayjs from "dayjs"
-import getExpensesWithTotalAmount from "app/expenses/queries/getExpensesWithTotalAmount"
+import getNotRefundedExpenses from "app/expenses/queries/getNotRefundedExpenses"
 
 export function NewRefund() {
   const [createRefundMutation] = useMutation(createRefund)
   const router = useRouter()
 
-  const [{ expenses }] = useQuery(
-    getExpensesWithTotalAmount,
+  const [expenses] = useQuery(
+    getNotRefundedExpenses,
     {
       orderBy: { createdAt: "asc" },
-      where: { refund: null },
     },
     { staleTime: Infinity }
   )

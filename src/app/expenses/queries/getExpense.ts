@@ -2,6 +2,7 @@ import { NotFoundError } from "blitz"
 import { resolver } from "@blitzjs/rpc"
 import db from "db"
 import { z } from "zod"
+import computeTotalAmount from "../../../../db/computeTotalAmount"
 
 const GetExpense = z.object({
   // This accepts type of undefined, but is required at runtime
@@ -13,13 +14,14 @@ export default resolver.pipe(resolver.zod(GetExpense), resolver.authorize(), asy
   const expense = await db.expense.findFirst({
     where: { id },
     include: {
-      user: { select: { name: true, hashedPassword: false } },
+      user: { select: { name: true } },
       details: true,
-      parts: { include: { user: { select: { name: true, hashedPassword: false } } } },
+      parts: { include: { user: { select: { name: true } } } },
+      refund: { include: { user: { select: { name: true } } } },
     },
   })
 
   if (!expense) throw new NotFoundError()
 
-  return expense
+  return computeTotalAmount(expense)
 })

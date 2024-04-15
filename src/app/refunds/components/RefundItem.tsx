@@ -22,27 +22,34 @@ import {
   useTheme,
 } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2"
-import { ExpenseDetailRecord, ExpensePartRecord, ExpenseRecord } from "db/types"
+import { RefundRecord } from "db/types"
 import { useConfirm } from "material-ui-confirm"
 import Link from "next/link"
 import router from "next/router"
 import { useState, MouseEvent } from "react"
-import { RefundDate } from "app/refunds/components/RefundDate"
+import { BalancesDetails } from "./BalancesDetails"
+import { RefundDate } from "./RefundDate"
 
-interface ExpenseItemProps {
-  expense: ExpenseRecord
+interface RefundItemProps {
+  refund: RefundRecord
   onDelete?: (id: number) => void
   editable?: boolean
 }
 
-export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
+export function RefundItem({ onDelete, editable, refund }: RefundItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const moreInfos = MoreInfos({ expense })
+  const moreInfos = MoreInfos({ refund })
 
   const handleToggleMoreInfos = () => {
     setIsExpanded(!isExpanded)
   }
+
+  const totalAmount = refund.expenses
+    ? refund.expenses.reduce((accumulator, expense) => {
+        return accumulator + Number(expense.totalAmount)
+      }, 0)
+    : null
 
   return (
     <Grid container spacing={2} sx={{ width: "100%" }}>
@@ -51,9 +58,9 @@ export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
           container
           spacing={0}
           columnSpacing={1}
-          alignItems="flex-start"
+          alignItems="center"
           alignContent="flex-start"
-          flexWrap="nowrap"
+          // flexWrap="nowrap"
           sx={{ cursor: moreInfos ? "pointer" : "inherit" }}
           onClick={handleToggleMoreInfos}
         >
@@ -64,26 +71,27 @@ export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
                   transform: isExpanded ? "rotate(90deg)" : "none",
                   transition: "transform 330ms ease-in-out",
                 }}
+                fontSize="large"
               >
                 <ChevronRight />
               </SvgIcon>
             ) : null}
           </Grid>
           <Grid>
-            <Typography variant="body1" component="h2">
-              <strong>{expense.title}</strong>
+            <Typography variant="h6" component="h2">
+              <strong>{"Remboursement #" + refund.id}</strong>
             </Typography>
+          </Grid>
+          <Grid>
+            <RefundDate refund={refund} />
           </Grid>
         </Grid>
-        <Grid container alignItems="center" xs={12}>
-          <Grid>
-            <Typography variant="body1" component="em">
-              {"Payé par : " + expense.user.name}
-            </Typography>
-          </Grid>
-          <Grid>
-            <RefundDate refund={expense.refund !== undefined ? expense.refund : undefined} />
-          </Grid>
+
+        <Grid>
+          <BalancesDetails balances={refund.balances} />
+        </Grid>
+        <Grid>
+          <Typography variant="body1">{refund.comment}</Typography>
         </Grid>
       </Grid>
       <Grid
@@ -96,17 +104,14 @@ export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
         justifyContent={{ xs: "flex-start", sm: "space-between" }}
       >
         <Grid>
-          <ActionMenu id={expense.id} onDelete={onDelete} editable={editable} />
+          <ActionMenu id={refund.id} onDelete={onDelete} editable={editable} />
         </Grid>
         <Grid>
-          <Chip
-            variant="outlined"
-            label={expense.totalAmount + " €"}
-            color={expense.totalAmount >= 0 ? "error" : "success"}
-          />
+          {totalAmount !== null ? (
+            <Chip variant="outlined" label={totalAmount + " €"} color="error" />
+          ) : null}
         </Grid>
       </Grid>
-
       <Grid xs={12}>
         <Collapse in={isExpanded}>{moreInfos}</Collapse>
       </Grid>
@@ -137,7 +142,8 @@ function ActionMenu({ id, editable, onDelete }: ActionMenuProps) {
     ? () => {
         confirm({
           title: "Êtes-vous sûr ?",
-          description: "Cette action supprimera la dépense sans possibiltié de récupération !",
+          description:
+            "Cette action supprimera le remboursement sans possibiltié de récupération !",
           cancellationText: "Annuler",
           confirmationText: "Oui, supprimer",
           confirmationButtonProps: { color: "error" },
@@ -165,7 +171,7 @@ function ActionMenuDesktop({ id, editable, onDelete }: ActionMenuProps) {
   return (
     <Box>
       {editable ? (
-        <Link href={`/expenses/${id}/edit`} passHref legacyBehavior>
+        <Link href={`/refunds/${id}/edit`} passHref legacyBehavior>
           <IconButton component="a">
             <Edit />
           </IconButton>
@@ -212,7 +218,7 @@ function ActionMenuMobile({ id, editable, onDelete }: ActionMenuProps) {
 
   const handleClickEdit = () => {
     handleMenuClose()
-    router.push(`/expenses/${id}/edit`)
+    router.push(`/refunds/${id}/edit`)
   }
 
   const handleClickDelete = () => {
@@ -246,30 +252,11 @@ function ActionMenuMobile({ id, editable, onDelete }: ActionMenuProps) {
 }
 
 interface MoreInfosProps {
-  expense: ExpenseRecord
+  refund: RefundRecord
 }
 
-/**
- * Affichage des détails
- * @param param0
- */
-function MoreInfos({ expense }: MoreInfosProps) {
-  if (!expense.details && !expense.parts) {
-    return null
-  }
-
-  return (
-    <Stack direction={{ xs: "column", md: "row" }} spacing={{ xs: 2, md: 1 }}>
-      <Details details={expense.details} />
-      <Parts parts={expense.parts} />
-    </Stack>
-  )
-}
-interface DetailsProps {
-  details?: ExpenseDetailRecord[] | null
-}
-function Details({ details }: DetailsProps) {
-  if (!details) {
+function MoreInfos({ refund }: MoreInfosProps) {
+  if (!refund.expenses) {
     return null
   }
 
@@ -279,63 +266,19 @@ function Details({ details }: DetailsProps) {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell colSpan={3} align="center">
-                Détails
-              </TableCell>
-            </TableRow>
-            <TableRow>
+              <TableCell>Dépense</TableCell>
               <TableCell>Date</TableCell>
-              <TableCell>Commentaire</TableCell>
+              <TableCell>Qui a payé</TableCell>
               <TableCell>Montant</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {details.map((detail, index) => (
+            {refund.expenses.map((expense, index) => (
               <TableRow hover key={index}>
-                <TableCell>{detail.date.toLocaleDateString()}</TableCell>
-
-                <TableCell>{detail.comment}</TableCell>
-                <TableCell>{detail.amount + " €"}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-  )
-}
-
-interface PartsProps {
-  parts?: ExpensePartRecord[] | null
-}
-
-function Parts({ parts }: PartsProps) {
-  if (!parts) {
-    return null
-  }
-
-  return (
-    <Paper>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell colSpan={3} align="center">
-                Parts
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Qui</TableCell>
-              <TableCell>Part</TableCell>
-              <TableCell>Montant</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {parts.map((part, index) => (
-              <TableRow hover key={index}>
-                <TableCell>{part.user.name}</TableCell>
-                <TableCell>{part.part?.toString()}</TableCell>
-                <TableCell>{part.amount + " €"}</TableCell>
+                <TableCell>{expense.title}</TableCell>
+                <TableCell>{expense.details[0].date.toLocaleDateString()}</TableCell>
+                <TableCell>{expense.user.name}</TableCell>
+                <TableCell>{expense.totalAmount + " €"}</TableCell>
               </TableRow>
             ))}
           </TableBody>

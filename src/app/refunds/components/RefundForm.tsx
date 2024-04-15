@@ -1,20 +1,21 @@
 import { Form, FormProps } from "src/app/components/Form"
 import Grid from "@mui/material/Unstable_Grid2"
 import { z } from "zod"
-import { ExpenseWithTotalAmount } from "app/expenses/queries/getExpensesWithTotalAmount"
-import { Paper, Stack } from "@mui/material"
+import { ExpenseRecord } from "db/types"
+import { List, ListItem, Paper, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
 import React from "react"
 import { Field } from "formik"
-import { Balance, calculateBalance } from "app/util/calculateBalance"
+import { Balance, calculateBalance } from "@/db/computeBalances"
 import { BalancesDetails } from "./BalancesDetails"
 import { CheckboxWithLabel, TextField } from "formik-mui"
 import { ExpensesListInput } from "./ExpensesListInput"
 import { DatePicker } from "app/components/formik-mui/DatePicker"
+import { ExpenseItem } from "app/expenses/components/ExpenseItem"
 export { FORM_ERROR } from "app/components/Form"
 
 interface RefundFormProps<S extends z.ZodType<any, any>> extends FormProps<S> {
-  expenses: ExpenseWithTotalAmount[]
+  expenses: ExpenseRecord[]
 }
 
 export function RefundForm<S extends z.ZodType<any, any>>({
@@ -24,7 +25,7 @@ export function RefundForm<S extends z.ZodType<any, any>>({
   // Convertion des valeurs des ids en string pour la gestion des checkboxes
   // Voir https://github.com/jaredpalmer/formik/issues/2044
   // Non encore implémenté par la pull request https://github.com/jaredpalmer/formik/pull/2255
-  if (props.initialValues) {
+  if (props.initialValues && props.initialValues.expenseIds) {
     props.initialValues.expenseIds = props.initialValues.expenseIds.map((value: number) =>
       String(value)
     )
@@ -34,11 +35,11 @@ export function RefundForm<S extends z.ZodType<any, any>>({
 
   const getBalances = useCallback(
     (expenseIds?: string[]) => {
-      const filtererExpenses = expenses.filter((expense) => {
+      const filteredExpenses = expenses.filter((expense) => {
         return expenseIds ? expenseIds.indexOf(String(expense.id)) !== -1 : true
       })
 
-      return calculateBalance(filtererExpenses)
+      return calculateBalance(filteredExpenses)
     },
     [expenses]
   )
@@ -79,11 +80,22 @@ export function RefundForm<S extends z.ZodType<any, any>>({
             />
           </Grid>
         </Grid>
-        <ExpensesListInput
-          expenses={expenses}
-          onChange={(expenseIds) => handleChange(expenseIds)}
-          readonly={!isNew}
-        />
+        {isNew ? (
+          <ExpensesListInput
+            expenses={expenses}
+            onChange={(expenseIds) => handleChange(expenseIds)}
+          />
+        ) : (
+          <List>
+            {expenses.map((expense, index) => {
+              return (
+                <ListItem key={index} dense>
+                  <ExpenseItem expense={expense} />
+                </ListItem>
+              )
+            })}
+          </List>
+        )}
       </Stack>
     </Form>
   )

@@ -1,22 +1,17 @@
 import { Metadata } from "next"
-import Link from "next/link"
 import { Suspense } from "react"
+import Loading from "../loading"
 import { RefundsList } from "./components/RefundsList"
 
 export const metadata: Metadata = {
-  title: "Refunds",
-  description: "List of refunds",
+  title: "Remboursements",
+  description: "Liste des remboursements",
 }
 
 export default function Page() {
   return (
-    <div>
-      <p>
-        <Link href={"/refunds/new"}>Create Refund</Link>
-      </p>
-      <Suspense fallback={<div>Loading...</div>}>
-        <RefundsList />
-      </Suspense>
-    </div>
+    <Suspense fallback={<Loading />}>
+      <RefundsList />
+    </Suspense>
   )
 }

@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   Stack,
 } from "@mui/material"
-import { ExpenseWithTotalAmount } from "app/expenses/queries/getExpensesWithTotalAmount"
+import { ExpenseRecord } from "db/types"
 import { Field, useFormikContext } from "formik"
 import { CreateRefundSchema, UpdateRefundSchema } from "../schemas"
 import { z } from "zod"
@@ -16,18 +16,15 @@ import { Checkbox } from "formik-mui"
 import { ExpenseItem } from "app/expenses/components/ExpenseItem"
 
 export interface ExpensesListInputProps {
-  expenses: ExpenseWithTotalAmount[]
+  expenses: ExpenseRecord[]
   onChange?: (expenseIds: string[]) => void
-  readonly?: boolean
 }
 
 /**
  * Composant permettant d'afficher la liste des dépenses à ajouter au remboursement
  */
-export function ExpensesListInput({ expenses, onChange, readonly }: ExpensesListInputProps) {
-  const { values, setFieldValue, errors } = useFormikContext<
-    z.infer<typeof CreateRefundSchema> | z.infer<typeof UpdateRefundSchema>
-  >()
+export function ExpensesListInput({ expenses, onChange }: ExpensesListInputProps) {
+  const { values, setFieldValue, errors } = useFormikContext<z.infer<typeof CreateRefundSchema>>()
 
   const handleToggle = (id: number) => () => {
     const ids = values.expenseIds.map((value) => String(value)) as string[]
@@ -60,20 +57,6 @@ export function ExpensesListInput({ expenses, onChange, readonly }: ExpensesList
     if (onChange) {
       onChange([])
     }
-  }
-
-  if (readonly) {
-    return (
-      <List>
-        {expenses.map((expense, index) => {
-          return (
-            <ListItem key={index} dense>
-              <ExpenseItem expense={expense} />
-            </ListItem>
-          )
-        })}
-      </List>
-    )
   }
 
   return (

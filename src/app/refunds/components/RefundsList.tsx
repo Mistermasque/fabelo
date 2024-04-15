@@ -1,18 +1,36 @@
 "use client"
-import { usePaginatedQuery } from "@blitzjs/rpc"
+import { useMutation, usePaginatedQuery } from "@blitzjs/rpc"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import getRefunds from "../queries/getRefunds"
 import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
+import { Divider, Stack } from "@mui/material"
+import deleteRefund from "../mutations/deleteRefund"
+import { RefundItem } from "./RefundItem"
+import { usePageTitle } from "app/hooks/usePageTitle"
+import { useEffect } from "react"
+import { RefundRecord } from "db/types"
 
 const ITEMS_PER_PAGE = 100
 
-export const RefundsList = () => {
+export function RefundsList() {
+  const { setPageTitle } = usePageTitle()
+  const [deleteRefundMutation] = useMutation(deleteRefund)
+
+  useEffect(() => {
+    setPageTitle("Liste des remboursements")
+  })
+
+  const handleDeleteRefund = async (id: number) => {
+    await deleteRefundMutation({ id })
+    refetch()
+  }
+
   const searchparams = useSearchParams()!
   const page = Number(searchparams.get("page")) || 0
-  const [{ refunds, hasMore }] = usePaginatedQuery(getRefunds, {
+  const [{ refunds, hasMore }, { refetch }] = usePaginatedQuery(getRefunds, {
     orderBy: { id: "asc" },
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
@@ -32,21 +50,20 @@ export const RefundsList = () => {
   }
 
   return (
-    <div>
-      <ul>
+    <>
+      {/* <SubMenuDrawerBox iconButton="Search">
+        <ExpensesFilterForm onFilter={handleFilter} initialValues={getFiltersFromURL()} />
+      </SubMenuDrawerBox> */}
+      <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
         {refunds.map((refund) => (
-          <li key={refund.id}>
-            <Link href={`/refunds/${refund.id}`}>{refund.name}</Link>
-          </li>
+          <RefundItem
+            key={refund.id}
+            refund={refund as RefundRecord}
+            onDelete={handleDeleteRefund}
+            editable
+          />
         ))}
-      </ul>
-
-      <button disabled={page === 0} onClick={goToPreviousPage}>
-        Previous
-      </button>
-      <button disabled={!hasMore} onClick={goToNextPage}>
-        Next
-      </button>
-    </div>
+      </Stack>
+    </>
   )
 }

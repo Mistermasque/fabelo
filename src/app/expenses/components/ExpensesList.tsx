@@ -12,14 +12,12 @@ import deleteExpense from "../mutations/deleteExpense"
 import { ExpensesFilterForm } from "./ExpensesFilterForms"
 import { SubMenuDrawerBox } from "app/components/layout/SubMenuDrawerBox"
 import { useSearchFilters } from "app/hooks/useSearchFilter"
-import getExpenses, {
-  ExpenseWithTotalAmount,
-  FilterExpensesWithTotalAmountType,
-} from "../queries/getExpensesWithTotalAmount"
+import getExpenses from "../queries/getExpenses"
+import { ExpenseRecord, ExpenseRecordWithRefund, FilterExpensesType } from "../../../../db/types"
 
 const ITEMS_PER_PAGE = 100
 
-export const ExpensesList = () => {
+export function ExpensesList() {
   const { setPageTitle } = usePageTitle()
 
   const [deleteExpenseMutation] = useMutation(deleteExpense)
@@ -33,14 +31,14 @@ export const ExpensesList = () => {
     refetch()
   }
 
-  const handleFilter = async (values: FilterExpensesWithTotalAmountType) => {
+  const handleFilter = async (values: FilterExpensesType) => {
     const params = mergeURLParams(values)
     router.push((pathname + "?" + params.toString()) as Route)
   }
 
   const searchparams = useSearchParams()!
   const { mergeURLParams, getFiltersFromURL, getOrderByFromURL } =
-    useSearchFilters<FilterExpensesWithTotalAmountType>(
+    useSearchFilters<FilterExpensesType>(
       { payorId: "", isPaid: "", dateMin: null, dateMax: null, title: "" },
       { title: "asc" }
     )
@@ -73,8 +71,13 @@ export const ExpensesList = () => {
         <ExpensesFilterForm onFilter={handleFilter} initialValues={getFiltersFromURL()} />
       </SubMenuDrawerBox>
       <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
-        {expenses.map((expense: ExpenseWithTotalAmount) => (
-          <ExpenseItem key={expense.id} expense={expense} onDelete={handleDeleteExpense} editable />
+        {expenses.map((expense) => (
+          <ExpenseItem
+            key={expense.id}
+            expense={expense as ExpenseRecord}
+            onDelete={handleDeleteExpense}
+            editable
+          />
         ))}
       </Stack>
     </>

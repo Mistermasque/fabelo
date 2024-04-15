@@ -6,6 +6,7 @@ import { UpdateRefundSchema } from "../schemas"
 import { FORM_ERROR, RefundForm } from "./RefundForm"
 import { useMutation, useQuery } from "@blitzjs/rpc"
 import { useRouter } from "next/navigation"
+import { ExpenseRecord } from "../../../../db/types"
 
 export const EditRefund = ({ refundId }: { refundId: number }) => {
   const [refund, { setQueryData }] = useQuery(
@@ -18,34 +19,25 @@ export const EditRefund = ({ refundId }: { refundId: number }) => {
   )
   const [updateRefundMutation] = useMutation(updateRefund)
   const router = useRouter()
+
+  const initialValues = refund
+
   return (
-    <>
-      <div>
-        <h1>Edit Refund {refund.id}</h1>
-        <pre>{JSON.stringify(refund, null, 2)}</pre>
-        <Suspense fallback={<div>Loading...</div>}>
-          <RefundForm
-            submitText="Update Refund"
-            schema={UpdateRefundSchema}
-            initialValues={refund}
-            onSubmit={async (values) => {
-              try {
-                const updated = await updateRefundMutation({
-                  ...values,
-                  id: refund.id,
-                })
-                await setQueryData(updated)
-                router.refresh()
-              } catch (error: any) {
-                console.error(error)
-                return {
-                  [FORM_ERROR]: error.toString(),
-                }
-              }
-            }}
-          />
-        </Suspense>
-      </div>
-    </>
+    <RefundForm
+      expenses={refund.expenses as ExpenseRecord[]}
+      submitText="Mettre à jour le remboursement"
+      initialValues={initialValues}
+      schema={UpdateRefundSchema}
+      onSubmit={async (values) => {
+        try {
+          const refund = await updateRefundMutation(values)
+          router.push("/refunds")
+        } catch (error: any) {
+          return {
+            [FORM_ERROR]: error.toString(),
+          }
+        }
+      }}
+    />
   )
 }
