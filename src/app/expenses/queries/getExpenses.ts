@@ -2,9 +2,7 @@ import { paginate } from "blitz"
 import { resolver } from "@blitzjs/rpc"
 import db, { Prisma } from "db"
 import { z, ZodTypeAny } from "zod"
-
-import { ExpenseRecord } from "../../../../db/types"
-import computeTotalAmount from "../../../../db/computeTotalAmount"
+import computeTotalAmount from "@/db/computeTotalAmount"
 
 const zodInputStringPipe = (zodPipe: ZodTypeAny) =>
   z
@@ -25,9 +23,11 @@ export const FilterExpensesSchema = z.object({
   title: z.string().optional(),
 })
 
+export type FilterExpensesType = z.infer<typeof FilterExpensesSchema>
+
 interface GetExpensesInput
   extends Pick<Prisma.ExpenseFindManyArgs, "where" | "orderBy" | "skip" | "take"> {
-  filter?: z.infer<typeof FilterExpensesSchema>
+  filter?: FilterExpensesType
   includeRefund?: boolean
 }
 
@@ -35,9 +35,7 @@ function isValueActive(value: string | null | undefined | number | boolean | Dat
   return value !== undefined && value !== null && value !== ""
 }
 
-function convertFilterToWhereClause(
-  filter: z.infer<typeof FilterExpensesSchema>
-): Prisma.ExpenseWhereInput {
+function convertFilterToWhereClause(filter: FilterExpensesType): Prisma.ExpenseWhereInput {
   let ret: Prisma.ExpenseWhereInput = {}
 
   if (isValueActive(filter.isPaid)) {

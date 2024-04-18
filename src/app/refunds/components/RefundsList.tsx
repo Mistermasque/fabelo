@@ -11,7 +11,6 @@ import deleteRefund from "../mutations/deleteRefund"
 import { RefundItem } from "./RefundItem"
 import { usePageTitle } from "app/hooks/usePageTitle"
 import { useEffect } from "react"
-import { RefundRecord } from "db/types"
 
 const ITEMS_PER_PAGE = 100
 
@@ -56,12 +55,7 @@ export function RefundsList() {
       </SubMenuDrawerBox> */}
       <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
         {refunds.map((refund) => (
-          <RefundItem
-            key={refund.id}
-            refund={refund as RefundRecord}
-            onDelete={handleDeleteRefund}
-            editable
-          />
+          <RefundItem key={refund.id} refund={refund} onDelete={handleDeleteRefund} editable />
         ))}
       </Stack>
     </>

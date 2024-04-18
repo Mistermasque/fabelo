@@ -1,4 +1,4 @@
-import {z} from "zod"
+import { z } from "zod"
 
 export const email = z
   .string()
@@ -14,6 +14,7 @@ export const password = z
 export const Signup = z.object({
   email,
   password,
+  name: z.string().min(1),
 })
 
 export const Login = z.object({

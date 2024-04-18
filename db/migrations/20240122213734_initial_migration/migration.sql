@@ -4,7 +4,7 @@ CREATE TABLE
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "name" TEXT,
+    "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "hashedPassword" TEXT,
     "role" TEXT NOT NULL DEFAULT 'USER'

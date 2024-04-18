@@ -1,12 +1,10 @@
 "use client"
-import { Suspense } from "react"
 import updateRefund from "../mutations/updateRefund"
 import getRefund from "../queries/getRefund"
 import { UpdateRefundSchema } from "../schemas"
 import { FORM_ERROR, RefundForm } from "./RefundForm"
 import { useMutation, useQuery } from "@blitzjs/rpc"
 import { useRouter } from "next/navigation"
-import { ExpenseRecord } from "../../../../db/types"
 
 export const EditRefund = ({ refundId }: { refundId: number }) => {
   const [refund, { setQueryData }] = useQuery(
@@ -24,7 +22,7 @@ export const EditRefund = ({ refundId }: { refundId: number }) => {
 
   return (
     <RefundForm
-      expenses={refund.expenses as ExpenseRecord[]}
+      expenses={refund.expenses}
       submitText="Mettre à jour le remboursement"
       initialValues={initialValues}
       schema={UpdateRefundSchema}

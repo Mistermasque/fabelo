@@ -1,21 +1,24 @@
 import { Form, FormProps } from "src/app/components/Form"
 import Grid from "@mui/material/Unstable_Grid2"
 import { z } from "zod"
-import { ExpenseRecord } from "db/types"
 import { List, ListItem, Paper, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
 import React from "react"
 import { Field } from "formik"
-import { Balance, calculateBalance } from "@/db/computeBalances"
+import { Balance, calculateBalance, ExpenseWithPartAndTotalAmount } from "@/db/computeBalances"
 import { BalancesDetails } from "./BalancesDetails"
 import { CheckboxWithLabel, TextField } from "formik-mui"
-import { ExpensesListInput } from "./ExpensesListInput"
+import { ExpensesListInput, ExpensesListInputProps } from "./ExpensesListInput"
 import { DatePicker } from "app/components/formik-mui/DatePicker"
 import { ExpenseItem } from "app/expenses/components/ExpenseItem"
+import { ArrayElement } from "@/src/core/types"
+
 export { FORM_ERROR } from "app/components/Form"
 
-interface RefundFormProps<S extends z.ZodType<any, any>> extends FormProps<S> {
-  expenses: ExpenseRecord[]
+type Expense = ArrayElement<ExpensesListInputProps["expenses"]> & ExpenseWithPartAndTotalAmount
+
+export interface RefundFormProps<S extends z.ZodType<any, any>> extends FormProps<S> {
+  expenses: Expense[]
 }
 
 export function RefundForm<S extends z.ZodType<any, any>>({

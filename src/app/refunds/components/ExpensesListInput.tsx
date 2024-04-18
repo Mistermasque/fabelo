@@ -8,15 +8,14 @@ import {
   ListItemIcon,
   Stack,
 } from "@mui/material"
-import { ExpenseRecord } from "db/types"
 import { Field, useFormikContext } from "formik"
 import { CreateRefundSchema, UpdateRefundSchema } from "../schemas"
 import { z } from "zod"
 import { Checkbox } from "formik-mui"
-import { ExpenseItem } from "app/expenses/components/ExpenseItem"
+import { ExpenseItem, ExpenseItemProps } from "app/expenses/components/ExpenseItem"
 
 export interface ExpensesListInputProps {
-  expenses: ExpenseRecord[]
+  expenses: ExpenseItemProps["expense"][]
   onChange?: (expenseIds: string[]) => void
 }
 

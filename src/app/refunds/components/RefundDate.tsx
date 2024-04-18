@@ -1,6 +1,6 @@
 import { Chip } from "@mui/material"
 
-interface RefundDateProps {
+export interface RefundDateProps {
   refund?: {
     isValidated: boolean
     date: Date | null

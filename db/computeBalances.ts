@@ -31,7 +31,7 @@ export type WithBalances<T> = T & {
   balances: Balance[]
 }
 
-type ExpenseWithPartAndTotalAmount = WithTotalAmount<{
+export type ExpenseWithPartAndTotalAmount = WithTotalAmount<{
   userId: UserId
   user: User
   parts: {
@@ -41,7 +41,7 @@ type ExpenseWithPartAndTotalAmount = WithTotalAmount<{
   }[]
 }>
 
-type RefundWithExpenseDetails = {
+export type RefundWithExpenseDetails = {
   expenses: ExpenseWithPartAndTotalAmount[]
 }
 

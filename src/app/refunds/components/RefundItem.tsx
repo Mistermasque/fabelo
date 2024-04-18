@@ -22,16 +22,32 @@ import {
   useTheme,
 } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2"
-import { RefundRecord } from "db/types"
 import { useConfirm } from "material-ui-confirm"
 import Link from "next/link"
 import router from "next/router"
 import { useState, MouseEvent } from "react"
-import { BalancesDetails } from "./BalancesDetails"
-import { RefundDate } from "./RefundDate"
+import { BalancesDetails, BalancesDetailsProps } from "./BalancesDetails"
+import { RefundDate, RefundDateProps } from "./RefundDate"
 
-interface RefundItemProps {
-  refund: RefundRecord
+type Refund = {
+  id: number
+  comment: string | null
+  expenses: {
+    id: number
+    title: string
+    totalAmount: number
+    user: {
+      name: string
+    }
+    details: {
+      date: Date
+    }[]
+  }[]
+  balances: BalancesDetailsProps["balances"]
+} & RefundDateProps["refund"]
+
+export interface RefundItemProps {
+  refund: Refund
   onDelete?: (id: number) => void
   editable?: boolean
 }
@@ -252,7 +268,7 @@ function ActionMenuMobile({ id, editable, onDelete }: ActionMenuProps) {
 }
 
 interface MoreInfosProps {
-  refund: RefundRecord
+  refund: Refund
 }
 
 function MoreInfos({ refund }: MoreInfosProps) {

@@ -22,15 +22,27 @@ import {
   useTheme,
 } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2"
-import { ExpenseDetailRecord, ExpensePartRecord, ExpenseRecord } from "db/types"
 import { useConfirm } from "material-ui-confirm"
 import Link from "next/link"
 import router from "next/router"
 import { useState, MouseEvent } from "react"
-import { RefundDate } from "app/refunds/components/RefundDate"
+import { RefundDate, RefundDateProps } from "app/refunds/components/RefundDate"
+import { Decimal } from "@prisma/client/runtime/library"
 
-interface ExpenseItemProps {
-  expense: ExpenseRecord
+type Expense = {
+  id: number
+  totalAmount: number
+  title: string
+  details: DetailsProps["details"]
+  parts: PartsProps["parts"]
+  user: {
+    name: string
+  }
+  refund?: RefundDateProps["refund"]
+}
+
+export interface ExpenseItemProps {
+  expense: Expense
   onDelete?: (id: number) => void
   editable?: boolean
 }
@@ -246,7 +258,7 @@ function ActionMenuMobile({ id, editable, onDelete }: ActionMenuProps) {
 }
 
 interface MoreInfosProps {
-  expense: ExpenseRecord
+  expense: Expense
 }
 
 /**
@@ -266,7 +278,13 @@ function MoreInfos({ expense }: MoreInfosProps) {
   )
 }
 interface DetailsProps {
-  details?: ExpenseDetailRecord[] | null
+  details?:
+    | {
+        amount: number | Decimal
+        comment: string | null
+        date: Date
+      }[]
+    | null
 }
 function Details({ details }: DetailsProps) {
   if (!details) {
@@ -306,7 +324,15 @@ function Details({ details }: DetailsProps) {
 }
 
 interface PartsProps {
-  parts?: ExpensePartRecord[] | null
+  parts?:
+    | {
+        part: number | Decimal | null
+        amount: number | Decimal
+        user: {
+          name: string
+        }
+      }[]
+    | null
 }
 
 function Parts({ parts }: PartsProps) {
