@@ -5,13 +5,13 @@ import { UpdateExpenseSchema } from "../schemas"
 export default resolver.pipe(
   resolver.zod(UpdateExpenseSchema),
   resolver.authorize(),
-  async ({ id, ...data }) => {
+  async ({ ...data }) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const { details, parts, userId, isDefaultParts } = data
+    const { id, details, parts, userId, isDefaultParts } = data
 
     let createParts: {
       part?: number
-      isAmount: boolean
+      isAmount: boolean | undefined
       amount: number
       user: { connect: { id: number } }
     }[] = []
@@ -19,7 +19,7 @@ export default resolver.pipe(
     if (isDefaultParts) {
       const users = await db.user.findMany({ select: { id: true } })
       const total = details.reduce((accumulator, detail) => {
-        return accumulator + detail.amount
+        return accumulator + Number(detail.amount)
       }, 0)
       const nbUsers = users.length
       const amount = total / nbUsers
@@ -38,9 +38,9 @@ export default resolver.pipe(
 
         createParts.push({
           user: { connect: { id: p.userId } },
-          part,
+          part: Number(part),
           isAmount,
-          amount,
+          amount: Number(amount),
         })
       })
     }
@@ -60,9 +60,10 @@ export default resolver.pipe(
         },
       },
       include: {
-        user: { select: { name: true, hashedPassword: false } },
+        user: { select: { name: true, id: true } },
         details: true,
-        parts: { include: { user: { select: { name: true, hashedPassword: false } } } },
+        parts: { include: { user: { select: { name: true, id: true } } } },
+        refund: { include: { user: { select: { name: true, id: true } } } },
       },
     })
 

@@ -17,7 +17,7 @@ export interface FormProps<S extends z.ZodType<any, any>>
   submitText?: string
   schema?: S
   onSubmit: (values: z.infer<S>) => Promise<void | OnSubmitResult>
-  initialValues?: FormikProps<z.infer<S>>["initialValues"]
+  initialValues?: FormikProps<z.input<S>>["initialValues"]
 }
 
 interface OnSubmitResult {

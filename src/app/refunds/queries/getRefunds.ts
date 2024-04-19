@@ -1,8 +1,8 @@
 import { paginate } from "blitz"
 import { resolver } from "@blitzjs/rpc"
 import db, { Prisma } from "db"
-import computeTotalAmount from "@/db/computeTotalAmount"
-import computeBalances from "@/db/computeBalances"
+import computeTotalAmount from "@/db/virtual-fields/computeTotalAmount"
+import computeBalances from "@/db/virtual-fields/computeBalances"
 
 interface GetRefundsInput
   extends Pick<Prisma.RefundFindManyArgs, "where" | "orderBy" | "skip" | "take"> {}

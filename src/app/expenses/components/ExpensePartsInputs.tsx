@@ -1,57 +1,66 @@
 import { Field, FieldArray, useFormikContext } from "formik"
 import React, { ChangeEvent, PropsWithoutRef, useEffect } from "react"
-import { CreateExpenseSchema, UpdateExpenseSchema } from "src/app/expenses/schemas"
-import { z } from "zod"
 import {
-  CreateExpenseUserPartSchema,
-  UpdateExpenseUserPartSchema,
-} from "src/app/expense-user-parts/schemas"
-import { useUserParts } from "../hooks/useUserParts"
+  CreateExpenseInput,
+  UpdateExpenseInput,
+  CreateExpenseUserPartInput,
+  UpdateExpenseUserPartInput,
+} from "src/app/expenses/schemas"
 import { useQuery } from "@blitzjs/rpc"
 import getUsers from "../../users/queries/getUsers"
-import { CreateExpenseDetailSchema, UpdateExpenseDetailSchema } from "../../expense-details/schemas"
 import { Box, Divider, InputAdornment, Stack } from "@mui/material"
 import { TextField } from "formik-mui"
 export { FORM_ERROR } from "src/app/components/Form"
 
-type PartType =
-  | (z.infer<typeof CreateExpenseUserPartSchema> & { user?: { name: string | null; id: number } })
-  | (z.infer<typeof UpdateExpenseUserPartSchema> & { user?: { name: string | null; id: number } })
+type User = { name: string | null; id: number }
 
-export interface ExpensePartsInputsProps {
-  totalAmount: number
-  outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
+type PartValue = CreateExpenseUserPartInput | UpdateExpenseUserPartInput
+
+type Part = {
+  userId: number
+  part?: number | null
+  amount: number
+  isAmount: boolean
 }
 
-function buildParts(
-  users: { name: string | null; id: number }[],
-  partValues:
-    | z.infer<typeof CreateExpenseUserPartSchema>[]
-    | z.infer<typeof UpdateExpenseUserPartSchema>[],
-  totalAmount: number
-): PartType[] {
-  let parts: PartType[] = []
+function buildParts(users: User[], partValues: PartValue[], totalAmount: number): Part[] {
+  let parts: Part[] = []
+  const partValuesDefined = partValues && partValues.length != 0
 
   // Construction des valeurs de base
   users.forEach((user) => {
-    let value =
-      partValues && partValues.length != 0
-        ? partValues.find((part) => part.userId == user.id)
-        : undefined
-
-    if (!value) {
-      value = {
-        userId: user.id,
-        part: 1,
-        amount: 0,
-        isAmount: false,
-      }
+    const defaultValue = {
+      userId: user.id,
+      part: 1,
+      amount: 0,
+      isAmount: false,
     }
 
-    parts.push({
-      ...value,
-      user,
-    })
+    const partVal = partValuesDefined
+      ? partValues.find((part) => part.userId == user.id)
+      : undefined
+
+    const value = partVal
+      ? {
+          userId: user.id,
+          // si part ne correspond pas à un nombre on prend la valeur par défaut
+          // sinon, on ne la prend que s'il est supérieur ou égale à 0
+          part: Number.isNaN(partVal.part)
+            ? defaultValue.part
+            : Number(partVal.part) >= 0
+            ? Number(partVal.part)
+            : 0,
+          // si amount ne correspond pas à un nombre on prend la valeur par défaut
+          // sinon, on ne la prend que s'il est supérieure ou égale à 0
+          amount:
+            Number.isNaN(partVal.amount) || partVal.amount < 0
+              ? defaultValue.amount
+              : Number(partVal.amount),
+          isAmount: Boolean(partVal.isAmount),
+        }
+      : defaultValue
+
+    parts.push(value)
   })
 
   let amount = totalAmount
@@ -69,21 +78,22 @@ function buildParts(
   // Mise à jour des montants et des parts
   parts.forEach((part) => {
     if (part.isAmount) {
-      part.part = undefined
+      part.part = null
     } else {
-      if (part.part === undefined || part.part === null) {
-        part.part = 1
-      }
-      part.amount = (amount * part.part) / nbTotalParts
+      part.amount = (amount * Number(part.part)) / nbTotalParts
     }
   })
 
   return parts
 }
 
-export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInputsProps) {
+export interface ExpensePartsInputsProps {
+  totalAmount: number
+}
+
+export function ExpensePartsInputs({ totalAmount }: ExpensePartsInputsProps) {
   const { values, setFieldValue, handleChange } = useFormikContext<
-    z.infer<typeof CreateExpenseSchema> | z.infer<typeof UpdateExpenseSchema>
+    CreateExpenseInput | UpdateExpenseInput
   >()
 
   const [users, {}] = useQuery(
@@ -94,13 +104,7 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
     }
   )
 
-  let parts: PartType[] = values.parts
-
-  // Recalcul des parts si on les modifie ou si le montant total évolue
-  useEffect(() => {
-    values.parts = buildParts(users, values.parts, totalAmount) as PartType[]
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.parts, totalAmount, users])
+  values.parts = buildParts(users, values.parts, totalAmount)
 
   const handleChangePart = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     handleChange(e)
@@ -117,7 +121,7 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
       name="parts"
       render={() => (
         <Stack divider={<Divider flexItem />} spacing={2}>
-          {parts.map((part, index) => (
+          {users.map((user, index) => (
             <Stack
               alignItems={{ xs: "flex-start", sm: "center" }}
               direction={{ xs: "column", sm: "row" }}
@@ -125,22 +129,18 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
               key={index}
             >
               <Box sx={{ width: { sm: "50%" }, flexGrow: 1 }}>
-                <strong>{part.user?.name}</strong>
+                <strong>{user.name}</strong>
               </Box>
 
-              <input name={"parts[" + index + "].userId"} type="hidden" value={part.userId} />
-              <input
-                name={"parts[" + index + "].isAmount"}
-                type="hidden"
-                value={part.isAmount ? 1 : 0}
-              />
+              <input name={"parts[" + index + "].userId"} type="hidden" />
+              <input name={"parts[" + index + "].isAmount"} type="hidden" />
               <Field
                 name={"parts[" + index + "].part"}
                 label="Part"
                 placeholder="Part"
                 type="number"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangePart(e, index)}
-                value={part.part}
+                value={values.parts[index].part ?? ""}
                 component={TextField}
                 sx={{ width: { xs: "100%", sm: "15%" } }}
               />
@@ -150,7 +150,6 @@ export function ExpensePartsInputs({ totalAmount, outerProps }: ExpensePartsInpu
                 placeholder="Montant"
                 type="number"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeAmount(e, index)}
-                value={part.amount}
                 component={TextField}
                 sx={{ width: { xs: "100%", sm: "25%" } }}
                 InputProps={{

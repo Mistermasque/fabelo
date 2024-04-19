@@ -1,16 +1,20 @@
 "use client"
-import { Suspense } from "react"
-import updateExpense from "../mutations/updateExpense"
-import getExpense from "../queries/getExpense"
-import { UpdateExpenseSchema } from "../schemas"
 import { FORM_ERROR, ExpenseForm } from "./ExpenseForm"
+import { UpdateExpenseSchema } from "../schemas"
 import { useMutation, useQuery } from "@blitzjs/rpc"
 import { useRouter } from "next/navigation"
-import Loading from "@/src/app/loading"
+import { usePageTitle } from "app/hooks/usePageTitle"
+import getExpenseWithoutTotalAmount from "../queries/getExpenseWithoutTotalAmount"
+import updateExpense from "../mutations/updateExpense"
+import { useEffect } from "react"
 
-export const EditExpense = ({ expenseId }: { expenseId: number }) => {
+export interface EditExpenseProps {
+  expenseId: number
+}
+
+export function EditExpense({ expenseId }: EditExpenseProps) {
   const [expense, { setQueryData }] = useQuery(
-    getExpense,
+    getExpenseWithoutTotalAmount,
     { id: expenseId },
     {
       // This ensures the query never refreshes and overwrites the form data while the user is editing.
@@ -18,36 +22,35 @@ export const EditExpense = ({ expenseId }: { expenseId: number }) => {
     }
   )
   const [updateExpenseMutation] = useMutation(updateExpense)
+
   const router = useRouter()
+  const { setPageTitle } = usePageTitle()
+
+  useEffect(() => {
+    setPageTitle(`Modification dépense #${expenseId}`)
+  })
+
+  const initialValues = expense
+
   return (
-    <>
-      <div>
-        <h1>Modification dépense #{expense.id}</h1>
-        <pre>{JSON.stringify(expense, null, 2)}</pre>
-        <Suspense fallback={Loading()}>
-          <ExpenseForm
-            submitText="Update Expense"
-            schema={UpdateExpenseSchema}
-            // @ts-ignore
-            initialValues={expense}
-            onSubmit={async (values) => {
-              try {
-                const updated = await updateExpenseMutation({
-                  ...values,
-                  id: expense.id,
-                })
-                await setQueryData(updated)
-                router.refresh()
-              } catch (error: any) {
-                console.error(error)
-                return {
-                  [FORM_ERROR]: error.toString(),
-                }
-              }
-            }}
-          />
-        </Suspense>
-      </div>
-    </>
+    <ExpenseForm
+      submitText="Création dépense"
+      schema={UpdateExpenseSchema}
+      initialValues={initialValues}
+      onSubmit={async (values) => {
+        values.id = expense.id
+
+        try {
+          const updated = await updateExpenseMutation(values)
+          await setQueryData(updated)
+          router.refresh()
+        } catch (error: any) {
+          console.error(error)
+          return {
+            [FORM_ERROR]: error.toString(),
+          }
+        }
+      }}
+    />
   )
 }

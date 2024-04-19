@@ -2,8 +2,8 @@ import { NotFoundError } from "blitz"
 import { resolver } from "@blitzjs/rpc"
 import db from "db"
 import { z } from "zod"
-import computeTotalAmount from "@/db/computeTotalAmount"
-import computeBalances from "@/db/computeBalances"
+import computeTotalAmount from "@/db/virtual-fields/computeTotalAmount"
+import computeBalances from "@/db/virtual-fields/computeBalances"
 
 const GetRefund = z.object({
   // This accepts type of undefined, but is required at runtime

@@ -1,33 +1,12 @@
 import { paginate } from "blitz"
 import { resolver } from "@blitzjs/rpc"
 import db, { Prisma } from "db"
-import { z, ZodTypeAny } from "zod"
-import computeTotalAmount from "@/db/computeTotalAmount"
-
-const zodInputStringPipe = (zodPipe: ZodTypeAny) =>
-  z
-    .string()
-    .transform((value) => (value === "" ? null : value))
-    .nullable()
-    .refine((value) => value === null || !isNaN(Number(value)), {
-      message: "Nombre Invalide",
-    })
-    .transform((value) => (value === null ? 0 : Number(value)))
-    .pipe(zodPipe)
-
-export const FilterExpensesSchema = z.object({
-  isPaid: z.coerce.boolean().nullable().optional().or(z.string().max(0)),
-  payorId: zodInputStringPipe(z.number().positive("Le nombre doit être supérieur à 0")),
-  dateMin: z.coerce.date().nullable().optional().or(z.string().max(0)),
-  dateMax: z.coerce.date().nullable().optional().or(z.string().max(0)),
-  title: z.string().optional(),
-})
-
-export type FilterExpensesType = z.infer<typeof FilterExpensesSchema>
+import { FilterExpensesSchema, FilterExpensesInput } from "../schemas"
+import computeTotalAmount from "@/db/virtual-fields/computeTotalAmount"
 
 interface GetExpensesInput
   extends Pick<Prisma.ExpenseFindManyArgs, "where" | "orderBy" | "skip" | "take"> {
-  filter?: FilterExpensesType
+  filter?: FilterExpensesInput
   includeRefund?: boolean
 }
 
@@ -35,7 +14,7 @@ function isValueActive(value: string | null | undefined | number | boolean | Dat
   return value !== undefined && value !== null && value !== ""
 }
 
-function convertFilterToWhereClause(filter: FilterExpensesType): Prisma.ExpenseWhereInput {
+function convertFilterToWhereClause(filter: FilterExpensesInput): Prisma.ExpenseWhereInput {
   let ret: Prisma.ExpenseWhereInput = {}
 
   if (isValueActive(filter.isPaid)) {

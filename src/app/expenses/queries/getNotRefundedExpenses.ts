@@ -1,6 +1,6 @@
 import { resolver } from "@blitzjs/rpc"
 import db, { Prisma } from "db"
-import computeTotalAmount from "../../../../db/computeTotalAmount"
+import computeTotalAmount from "@/db/virtual-fields/computeTotalAmount"
 
 interface GetNotRefundedExpensesInput
   extends Pick<Prisma.ExpenseFindManyArgs, "where" | "orderBy"> {}

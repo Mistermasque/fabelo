@@ -13,7 +13,7 @@ import { ExpensesFilterForm } from "./ExpensesFilterForms"
 import { SubMenuDrawerBox } from "app/components/layout/SubMenuDrawerBox"
 import { useSearchFilters } from "app/hooks/useSearchFilter"
 import getExpenses from "../queries/getExpenses"
-import { FilterExpensesType } from "@/db/types"
+import { FilterExpensesInput } from "../schemas"
 
 const ITEMS_PER_PAGE = 100
 
@@ -31,14 +31,14 @@ export function ExpensesList() {
     refetch()
   }
 
-  const handleFilter = async (values: FilterExpensesType) => {
+  const handleFilter = async (values: FilterExpensesInput) => {
     const params = mergeURLParams(values)
     router.push((pathname + "?" + params.toString()) as Route)
   }
 
   const searchparams = useSearchParams()!
   const { mergeURLParams, getFiltersFromURL, getOrderByFromURL } =
-    useSearchFilters<FilterExpensesType>(
+    useSearchFilters<FilterExpensesInput>(
       { payorId: "", isPaid: "", dateMin: null, dateMax: null, title: "" },
       { title: "asc" }
     )

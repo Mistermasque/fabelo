@@ -2,7 +2,6 @@ import { NotFoundError } from "blitz"
 import { resolver } from "@blitzjs/rpc"
 import db from "db"
 import { z } from "zod"
-import computeTotalAmount from "@/db/virtual-fields/computeTotalAmount"
 
 const GetExpense = z.object({
   // This accepts type of undefined, but is required at runtime
@@ -23,5 +22,5 @@ export default resolver.pipe(resolver.zod(GetExpense), resolver.authorize(), asy
 
   if (!expense) throw new NotFoundError()
 
-  return computeTotalAmount(expense)
+  return expense
 })

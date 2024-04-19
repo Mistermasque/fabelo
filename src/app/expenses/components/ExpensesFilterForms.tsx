@@ -5,16 +5,11 @@ import { Search } from "@mui/icons-material"
 import { useQuery } from "@blitzjs/rpc"
 import getUsersList from "app/users/queries/getUsersList"
 import { SelectWithOptions } from "app/components/formik-mui/SelectWithOptions"
-import { FilterExpensesSchema, FilterExpensesType } from "../queries/getExpenses"
+import { FilterExpensesSchema, FilterExpensesInput } from "../schemas"
 import { DatePicker } from "app/components/formik-mui/DatePicker"
 import { TextField } from "formik-mui"
 
 export { FORM_ERROR } from "app/components/Form"
-
-export interface ExpensesFilterFormProps {
-  initialValues: FilterExpensesType
-  onFilter: (values: FilterExpensesType) => void
-}
 
 function SubmitButton() {
   const { isSubmitting } = useFormikContext()
@@ -29,6 +24,11 @@ function SubmitButton() {
       <Search />
     </Button>
   )
+}
+
+export interface ExpensesFilterFormProps {
+  initialValues: FilterExpensesInput
+  onFilter: (values: FilterExpensesInput) => void
 }
 
 export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFormProps) {

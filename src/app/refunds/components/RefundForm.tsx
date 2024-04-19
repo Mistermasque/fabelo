@@ -5,7 +5,11 @@ import { List, ListItem, Paper, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
 import React from "react"
 import { Field } from "formik"
-import { Balance, calculateBalance, ExpenseWithPartAndTotalAmount } from "@/db/computeBalances"
+import {
+  Balance,
+  calculateBalance,
+  ExpenseWithPartAndTotalAmount,
+} from "@/db/virtual-fields/computeBalances"
 import { BalancesDetails } from "./BalancesDetails"
 import { CheckboxWithLabel, TextField } from "formik-mui"
 import { ExpensesListInput, ExpensesListInputProps } from "./ExpensesListInput"
