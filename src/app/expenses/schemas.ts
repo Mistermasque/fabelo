@@ -149,7 +149,14 @@ export const CreateExpenseSchema = z
         return accumulator + Number(detail.amount)
       }, 0)
 
-      return schema.parts.findIndex((part) => part.amount > totalAmount) === -1
+      const totalAmountParts = schema.parts.reduce((accumulator, part) => {
+        return accumulator + Number(part.amount)
+      }, 0)
+
+      return (
+        totalAmountParts == totalAmount &&
+        schema.parts.findIndex((part) => part.amount > totalAmount) === -1
+      )
     }
     return true
   }, "Le montant des parts n'est pas cohérent avec le montant global de la dépense")

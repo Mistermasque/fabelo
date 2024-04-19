@@ -69,6 +69,9 @@ function buildParts(users: User[], partValues: PartValue[], totalAmount: number)
   // Récupération du nombre de parts et du montant restant
   parts.forEach((part) => {
     if (part.isAmount) {
+      if (part.amount >= amount) {
+        part.amount = amount
+      }
       amount -= part.amount
     } else if (part.part) {
       nbTotalParts += part.part
