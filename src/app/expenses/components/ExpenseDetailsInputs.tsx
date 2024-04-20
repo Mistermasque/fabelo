@@ -1,46 +1,50 @@
 import { Field, FieldArray, FieldArrayRenderProps, useFormikContext } from "formik"
 import { TextField } from "formik-mui"
 import { DatePicker } from "@/src/app/components/formik-mui/DatePicker"
-
-import React, { PropsWithoutRef, useEffect } from "react"
+import React, { useEffect } from "react"
 import {
-  CreateExpenseDetailSchema,
-  UpdateExpenseDetailSchema,
-} from "src/app/expense-details/schemas"
-
-import { z } from "zod"
-import { CreateExpenseSchema, UpdateExpenseSchema } from "../schemas"
-import dayjs from "dayjs"
+  CreateExpenseDetailInput,
+  CreateExpenseInput,
+  UpdateExpenseDetailInput,
+  UpdateExpenseInput,
+} from "../schemas"
 import { Stack } from "@mui/system"
 import { Divider, Button, InputAdornment } from "@mui/material"
 import { Add, Remove } from "@mui/icons-material"
+import { useConfirm } from "material-ui-confirm"
 export { FORM_ERROR } from "src/app/components/Form"
 
-export type Detail =
-  | z.infer<typeof CreateExpenseDetailSchema>
-  | z.infer<typeof UpdateExpenseDetailSchema>
+export type Detail = CreateExpenseDetailInput | UpdateExpenseDetailInput
 
 export interface ExpenseDetailsInputsProps {
   onUpdateTotalAmount: (total: number) => void
-  outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>
 }
 
-export function ExpenseDetailsInputs({
-  onUpdateTotalAmount,
-  outerProps,
-}: ExpenseDetailsInputsProps) {
-  const { values, setFieldValue } = useFormikContext<
-    z.infer<typeof CreateExpenseSchema> | z.infer<typeof UpdateExpenseSchema>
-  >()
+export function ExpenseDetailsInputs({ onUpdateTotalAmount }: ExpenseDetailsInputsProps) {
+  const { values } = useFormikContext<CreateExpenseInput | UpdateExpenseInput>()
+  const details: Detail[] = values.details
+  const confirm = useConfirm()
 
   const handleRemove = (arrayHelpers: FieldArrayRenderProps, index: number, detail: Detail) => {
-    // TODO CONFIRM
-    arrayHelpers.remove(index)
+    // Si le detail est vide, on le supprime sans confirmation
+    if (!detail.amount && !detail.comment) {
+      arrayHelpers.remove(index)
+    } else {
+      confirm({
+        title: "Êtes-vous sûr ?",
+        description: "Ëtes-vous sûr de vouloir supprimer ce détail ?",
+        cancellationText: "Annuler",
+        confirmationText: "Oui, supprimer",
+        confirmationButtonProps: { color: "error" },
+      }).then(() => {
+        arrayHelpers.remove(index)
+      })
+    }
   }
 
   // Recalcul du total uniquement si les détails ont changé
   useEffect(() => {
-    const total: number = values.details.reduce((accumulator, detail) => {
+    const total: number = details.reduce((accumulator, detail) => {
       if (!detail.amount || Number.isNaN(detail.amount)) {
         return accumulator
       }
@@ -48,7 +52,7 @@ export function ExpenseDetailsInputs({
     }, 0)
 
     onUpdateTotalAmount(total)
-  }, [values.details, onUpdateTotalAmount])
+  }, [details, onUpdateTotalAmount])
 
   return (
     <FieldArray
@@ -56,8 +60,8 @@ export function ExpenseDetailsInputs({
       render={(arrayHelpers) => (
         <>
           <Stack divider={<Divider flexItem />} spacing={2}>
-            {values.details && values.details.length > 0
-              ? values.details.map((detail, index) => (
+            {details && details.length > 0
+              ? details.map((detail, index) => (
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={1} key={index}>
                     <Field
                       component={DatePicker}
@@ -74,6 +78,7 @@ export function ExpenseDetailsInputs({
                       InputProps={{
                         endAdornment: <InputAdornment position="end">€</InputAdornment>,
                       }}
+                      value={detail.amount === null ? "" : detail.amount}
                     />
                     <Field
                       component={TextField}
@@ -82,10 +87,11 @@ export function ExpenseDetailsInputs({
                       placeholder="Commentaire"
                       multiline
                       sx={{ width: "100%" }}
+                      value={detail.comment === null ? "" : detail.comment}
                     />
                     {
                       // On ne peut pas supprimer le dernier élément
-                      values.details.length > 1 ? (
+                      details.length > 1 ? (
                         <div>
                           <Button
                             onClick={() => handleRemove(arrayHelpers, index, detail)}
@@ -120,7 +126,7 @@ export function ExpenseDetailsInputs({
               onClick={() =>
                 arrayHelpers.push({
                   value: 0,
-                  date: dayjs() as any,
+                  date: new Date(),
                   comment: "",
                 })
               }

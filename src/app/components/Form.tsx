@@ -2,8 +2,8 @@ import { useState, ReactNode, PropsWithoutRef } from "react"
 import { Formik, FormikProps } from "formik"
 import { validateZodSchema } from "blitz"
 import { z } from "zod"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import "dayjs/locale/fr"
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3"
+import { fr } from "date-fns/locale/fr"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import { Stack, Alert } from "@mui/material"
 import { LoadingButton } from "@mui/lab"
@@ -37,7 +37,7 @@ export function Form<S extends z.ZodType<any, any>>({
 }: FormProps<S>) {
   const [formError, setFormError] = useState<string | null>(null)
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
       <Formik
         initialValues={initialValues || {}}
         validate={validateZodSchema(schema)}

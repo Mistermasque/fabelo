@@ -4,7 +4,6 @@ import { CreateRefundSchema } from "../schemas"
 import { useMutation, useQuery } from "@blitzjs/rpc"
 import createRefund from "../mutations/createRefund"
 import { useRouter } from "next/navigation"
-import dayjs from "dayjs"
 import getNotRefundedExpenses from "app/expenses/queries/getNotRefundedExpenses"
 
 export function NewRefund() {
@@ -26,10 +25,7 @@ export function NewRefund() {
   const initialValues = {
     expenseIds: expenseIds,
     comment: "",
-    // Il faut utiliser dayjs pour le DatePicker v6
-    // https://next.mui.com/x/migration/migration-pickers-v5/#update-the-format-of-the-value-prop
-    // et dayjs ne renvoie pas un type Date, on le passe en any pour éviter l'erreur typescript
-    date: dayjs() as any,
+    date: new Date(),
     isValidated: false,
   }
 

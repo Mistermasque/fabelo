@@ -37,7 +37,7 @@
     "@mui/x-date-pickers": "6.19.3",
     "@prisma/client": "5.4.2",
     "blitz": "2.0.3",
-    "dayjs": "1.11.10",
+    "date-fns": "3.6.0",
     "formik": "2.4.5",
     "formik-mui": "5.0.0-alpha.0",
     "material-ui-confirm": "3.0.11",

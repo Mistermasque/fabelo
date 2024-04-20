@@ -8,7 +8,6 @@ import { z } from "zod"
 import { useCurrentUser } from "app/users/hooks/useCurrentUser"
 import { usePageTitle } from "app/hooks/usePageTitle"
 
-import dayjs from "dayjs"
 import { useEffect } from "react"
 
 export function NewExpense() {
@@ -29,10 +28,7 @@ export function NewExpense() {
       {
         amount: 0,
         comment: "",
-        // Il faut utiliser dayjs pour le DatePicker v6
-        // https://next.mui.com/x/migration/migration-pickers-v5/#update-the-format-of-the-value-prop
-        // et dayjs ne renvoie pas un type Date, on le passe en any pour éviter l'erreur typescript
-        date: dayjs() as any,
+        date: new Date(),
       },
     ],
     userId: userId,
