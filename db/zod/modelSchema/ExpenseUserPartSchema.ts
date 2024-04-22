@@ -7,8 +7,6 @@ import { Prisma } from "@prisma/client"
 
 export const ExpenseUserPartSchema = z.object({
   id: z.number().int(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
   part: z
     .instanceof(Prisma.Decimal, {
       message: "Field 'part' must be a Decimal. Location: ['Models', 'ExpenseUserPart']",

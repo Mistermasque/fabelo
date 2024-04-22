@@ -10,9 +10,9 @@ type EditExpensePageProps = {
 }
 
 export async function generateMetadata({ params }: EditExpensePageProps): Promise<Metadata> {
-  const Expense = await invoke(getExpense, { id: Number(params.expenseId) })
   return {
-    title: `Modification dépense #${Expense.id}`,
+    title: `Modification dépense #${params.expenseId}`,
+    description: `Modification dépense #${params.expenseId}`,
   }
 }
 

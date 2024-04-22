@@ -86,12 +86,10 @@ model Expense {
 }
 
 model ExpenseDetail {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  date      DateTime
-  amount    Decimal
-  comment   String?
+  id      Int      @id @default(autoincrement())
+  date    DateTime
+  amount  Decimal
+  comment String?
 
   expense   Expense @relation(fields: [expenseId], references: [id])
   expenseId Int
@@ -99,8 +97,6 @@ model ExpenseDetail {
 
 model ExpenseUserPart {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   part      Decimal?
   amount    Decimal
   isAmount  Boolean  @default(false)

@@ -50,6 +50,7 @@ export function ExpensesList() {
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
     filter: getFiltersFromURL(["payorId", "isPaid", "dateMin", "dateMax", "title"]),
+    includeRefund: true,
   })
   const router = useRouter()
   const pathname = usePathname()
@@ -70,7 +71,7 @@ export function ExpensesList() {
       <SubMenuDrawerBox iconButton="Search">
         <ExpensesFilterForm onFilter={handleFilter} initialValues={getFiltersFromURL()} />
       </SubMenuDrawerBox>
-      <Stack divider={<Divider flexItem variant="fullWidth" />} spacing={2}>
+      <Stack spacing={2}>
         {expenses.map((expense) => (
           <ExpenseItem key={expense.id} expense={expense} onDelete={handleDeleteExpense} editable />
         ))}

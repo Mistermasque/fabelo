@@ -54,7 +54,7 @@ export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFo
   // Il faut définir des valeurs par défaut à null sinon on a une erreur de perte du contrôle de l'input
   // https://github.com/stackworx/formik-mui/issues/236
   initialValues = {
-    ...{ payorId: "", isPaid: "", dateMin: "", dateMax: "", title: "" },
+    ...{ payorId: "", isPaid: "", dateMin: null, dateMax: null, title: "" },
     ...initialValues,
   }
 
@@ -64,6 +64,7 @@ export function ExpensesFilterForm({ initialValues, onFilter }: ExpensesFilterFo
       initialValues={initialValues}
       onSubmit={async (values) => {
         try {
+          console.log(values)
           await onFilter(values)
         } catch (error: any) {
           console.error(error)

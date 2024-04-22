@@ -18,8 +18,10 @@ function convertFilterToWhereClause(filter: FilterExpensesInput): Prisma.Expense
   let ret: Prisma.ExpenseWhereInput = {}
 
   if (isValueActive(filter.isPaid)) {
-    ret.refund = {
-      isValidated: Boolean(filter.isPaid),
+    if (filter.isPaid) {
+      ret.NOT = { refundId: null }
+    } else {
+      ret.refundId = null
     }
   }
 
@@ -39,6 +41,8 @@ function convertFilterToWhereClause(filter: FilterExpensesInput): Prisma.Expense
       contains: filter.title,
     }
   }
+
+  console.log(ret)
 
   return ret
 }
@@ -63,6 +67,8 @@ export default resolver.pipe(
         ...where,
       }
     }
+
+    console.log(where)
 
     const { items, hasMore, nextPage, count } = await paginate({
       skip,

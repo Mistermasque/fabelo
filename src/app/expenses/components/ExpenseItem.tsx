@@ -119,9 +119,9 @@ export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
         </Grid>
       </Grid>
 
-      <Grid xs={12}>
-        <Collapse in={isExpanded}>{moreInfos}</Collapse>
-      </Grid>
+      <Collapse in={isExpanded}>
+        <Grid xs={12}>{moreInfos}</Grid>
+      </Collapse>
     </Grid>
   )
 }

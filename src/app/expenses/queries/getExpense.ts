@@ -14,10 +14,10 @@ export default resolver.pipe(resolver.zod(GetExpense), resolver.authorize(), asy
   const expense = await db.expense.findFirst({
     where: { id },
     include: {
-      user: { select: { name: true } },
+      user: { select: { id: true, name: true } },
       details: true,
-      parts: { include: { user: { select: { name: true } } } },
-      refund: { include: { user: { select: { name: true } } } },
+      parts: { include: { user: { select: { id: true, name: true } } } },
+      refund: { include: { user: { select: { id: true, name: true } } } },
     },
   })
 

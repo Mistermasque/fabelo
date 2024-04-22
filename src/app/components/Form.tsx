@@ -1,7 +1,7 @@
 import { useState, ReactNode, PropsWithoutRef } from "react"
-import { Formik, FormikProps } from "formik"
-import { validateZodSchema } from "blitz"
-import { z } from "zod"
+import { Formik, FormikErrors, FormikProps } from "formik"
+import { formatZodError, validateZodSchema } from "blitz"
+import { z, ZodError } from "zod"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3"
 import { fr } from "date-fns/locale/fr"
 import { LocalizationProvider } from "@mui/x-date-pickers"
@@ -42,7 +42,7 @@ export function Form<S extends z.ZodType<any, any>>({
         initialValues={initialValues || {}}
         validate={validateZodSchema(schema)}
         onSubmit={async (values, { setErrors }) => {
-          console.log("form sent data", values)
+          console.log("Form sent data", values)
           const { FORM_ERROR, ...otherErrors } = (await onSubmit(values)) || {}
 
           if (FORM_ERROR) {
@@ -51,19 +51,16 @@ export function Form<S extends z.ZodType<any, any>>({
           }
 
           if (Object.keys(otherErrors).length > 0) {
-            console.log("form errors", otherErrors)
+            console.log("Form errors", otherErrors)
             setErrors(otherErrors)
           }
         }}
       >
-        {({ handleSubmit, isSubmitting }) => (
+        {({ handleSubmit, isSubmitting, errors }) => (
           <form onSubmit={handleSubmit} className="form" {...props}>
-            {/* Form fields supplied as children are rendered here */}
             {children}
-
             <Stack spacing={2} sx={{ mt: 3 }}>
-              {formError && <Alert severity="error">{formError}</Alert>}
-
+              <FormErrors validationErrors={errors} formError={formError} />
               {submitText && (
                 <Stack direction="row" justifyContent="flex-end">
                   <LoadingButton
@@ -84,6 +81,23 @@ export function Form<S extends z.ZodType<any, any>>({
       </Formik>
     </LocalizationProvider>
   )
+}
+
+interface FormErrorsProps {
+  formError: string | null
+  validationErrors: FormikErrors<any>
+}
+
+function FormErrors({ formError, validationErrors }: FormErrorsProps) {
+  if (validationErrors && JSON.stringify(validationErrors) !== "{}") {
+    console.log("Form validation errors", JSON.stringify(validationErrors))
+  }
+
+  if (!formError) {
+    return null
+  }
+
+  return <Alert severity="error">{formError}</Alert>
 }
 
 export default Form

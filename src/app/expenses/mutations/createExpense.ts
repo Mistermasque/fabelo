@@ -1,5 +1,5 @@
 import { resolver } from "@blitzjs/rpc"
-import db from "db"
+import db, { Prisma } from "db"
 import { CreateExpenseSchema } from "../schemas"
 
 export default resolver.pipe(
@@ -9,17 +9,12 @@ export default resolver.pipe(
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
     const { details, parts, userId, isDefaultParts, title } = input
 
-    let createParts: {
-      part?: number
-      isAmount: boolean
-      amount: number
-      user: { connect: { id: number } }
-    }[] = []
+    let createParts: Prisma.ExpenseUserPartCreateWithoutExpenseInput[] = []
 
     if (isDefaultParts) {
       const users = await db.user.findMany({ select: { id: true } })
       const total = details.reduce((accumulator, detail) => {
-        return accumulator + detail.amount
+        return accumulator + Number(detail.amount)
       }, 0)
       const nbUsers = users.length
       const amount = total / nbUsers

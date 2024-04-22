@@ -34,16 +34,15 @@ export function EditExpense({ expenseId }: EditExpenseProps) {
 
   return (
     <ExpenseForm
-      submitText="Création dépense"
+      submitText="Modification dépense"
       schema={UpdateExpenseSchema}
       initialValues={initialValues}
       onSubmit={async (values) => {
         values.id = expense.id
-
         try {
           const updated = await updateExpenseMutation(values)
           await setQueryData(updated)
-          router.refresh()
+          router.push("/expenses")
         } catch (error: any) {
           console.error(error)
           return {
