@@ -1,5 +1,4 @@
 import { useSubMenu } from "@/src/app/hooks/useSubMenu"
-import { theme } from "@/src/app/theme"
 import { MoreVert, Search } from "@mui/icons-material"
 import { IconButton, IconButtonProps } from "@mui/material"
 

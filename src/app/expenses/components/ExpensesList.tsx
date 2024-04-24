@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
 import { usePageTitle } from "app/hooks/usePageTitle"
-import { Divider, Stack } from "@mui/material"
-import { ExpenseItem } from "./ExpenseItem"
+import { Chip, IconButton, Typography, List, ListItem, styled } from "@mui/material"
+import Grid from "@mui/material/Unstable_Grid2"
 import { useEffect } from "react"
 import deleteExpense from "../mutations/deleteExpense"
 import { ExpensesFilterForm } from "./ExpensesFilterForms"
@@ -14,6 +14,10 @@ import { SubMenuDrawerBox } from "app/components/layout/SubMenuDrawerBox"
 import { useSearchFilters } from "app/hooks/useSearchFilter"
 import getExpenses from "../queries/getExpenses"
 import { FilterExpensesInput } from "../schemas"
+import { Decimal } from "@prisma/client/runtime/library"
+import { RefundDate, RefundDateProps } from "app/refunds/components/RefundDate"
+import { ArrowForward } from "@mui/icons-material"
+import Link from "next/link"
 
 const ITEMS_PER_PAGE = 100
 
@@ -71,11 +75,92 @@ export function ExpensesList() {
       <SubMenuDrawerBox iconButton="Search">
         <ExpensesFilterForm onFilter={handleFilter} initialValues={getFiltersFromURL()} />
       </SubMenuDrawerBox>
-      <Stack spacing={2}>
+      <List>
         {expenses.map((expense) => (
-          <ExpenseItem key={expense.id} expense={expense} onDelete={handleDeleteExpense} editable />
+          <ExpenseListItem key={expense.id} expense={expense} />
         ))}
-      </Stack>
+      </List>
     </>
+  )
+}
+
+type ExpenseDetail = {
+  amount: number | Decimal
+  comment: string | null
+  date: Date
+}
+
+type Expense = {
+  id: number
+  totalAmount: number
+  title: string
+  details: ExpenseDetail[] | null
+  user: {
+    name: string
+  }
+  refund?: RefundDateProps["refund"]
+}
+
+interface ExpenseListItemProps {
+  expense: Expense
+}
+
+function ExpenseListItem({ expense }: ExpenseListItemProps) {
+  return (
+    <ListItem
+      sx={{
+        "&:hover": {
+          backgroundColor: (theme) => theme.palette.action.hover,
+        },
+      }}
+    >
+      <Grid container spacing={1} sx={{ width: "100%" }}>
+        <Grid container xs={6} sm={9}>
+          <Grid>
+            <Typography variant="body1" component="h2">
+              <strong>
+                {expense.details ? expense.details[0].date.toLocaleDateString() + " - " : null}
+                {expense.title}
+              </strong>
+            </Typography>
+          </Grid>
+          <Grid container alignItems="center" xs={12}>
+            <Grid>
+              <Typography variant="body1" component="em">
+                {"Payé par : " + expense.user.name}
+              </Typography>
+            </Grid>
+            <Grid>
+              <RefundDate refund={expense.refund !== undefined ? expense.refund : undefined} />
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          spacing={0}
+          xs={6}
+          sm={3}
+          direction="row"
+          alignItems="center"
+          alignContent="space-between"
+          justifyContent="flex-end"
+        >
+          <Grid>
+            <Chip
+              variant="outlined"
+              label={expense.totalAmount + " €"}
+              color={expense.totalAmount >= 0 ? "error" : "success"}
+            />
+          </Grid>
+          <Grid>
+            <Link href={`/expenses/${expense.id}`} passHref>
+              <IconButton>
+                <ArrowForward />
+              </IconButton>
+            </Link>
+          </Grid>
+        </Grid>
+      </Grid>
+    </ListItem>
   )
 }

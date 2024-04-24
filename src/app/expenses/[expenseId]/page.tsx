@@ -1,5 +1,4 @@
 import { Metadata } from "next"
-import Link from "next/link"
 import { Suspense } from "react"
 import { invoke } from "src/app/blitz-server"
 import getExpense from "../queries/getExpense"
@@ -19,13 +18,8 @@ type ExpensePageProps = {
 
 export default async function Page({ params }: ExpensePageProps) {
   return (
-    <div>
-      <p>
-        <Link href={"/expenses"}>Expenses</Link>
-      </p>
-      <Suspense fallback={Loading()}>
-        <Expense expenseId={Number(params.expenseId)} />
-      </Suspense>
-    </div>
+    <Suspense fallback={Loading()}>
+      <Expense expenseId={Number(params.expenseId)} />
+    </Suspense>
   )
 }

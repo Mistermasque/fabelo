@@ -1,8 +1,9 @@
 import { createGlobalState } from "react-hooks-global-state"
+import { MouseEvent } from "react"
 
 export type SubMenuType = {
   icon: "MoreVert" | "Search" | false
-  onClick?: () => void
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
 const initialState: SubMenuType = { icon: false }

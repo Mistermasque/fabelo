@@ -57,7 +57,7 @@ export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
   }
 
   return (
-    <Grid container spacing={2} sx={{ width: "100%" }}>
+    <Grid container spacing={1} sx={{ width: "100%" }}>
       <Grid container xs={9}>
         <Grid
           container
@@ -102,10 +102,10 @@ export function ExpenseItem({ expense, onDelete, editable }: ExpenseItemProps) {
         container
         spacing={0}
         xs={3}
-        direction={{ xs: "row-reverse", sm: "column" }}
-        alignItems={{ xs: "center", sm: "flex-end" }}
-        alignContent={{ xs: "space-between", sm: "flex-end" }}
-        justifyContent={{ xs: "flex-start", sm: "space-between" }}
+        direction={{ xs: "row-reverse" }}
+        alignItems={{ xs: "center" }}
+        alignContent={{ xs: "space-between" }}
+        justifyContent={{ xs: "flex-start" }}
       >
         <Grid>
           <ActionMenu id={expense.id} onDelete={onDelete} editable={editable} />
@@ -159,6 +159,7 @@ function ActionMenu({ id, editable, onDelete }: ActionMenuProps) {
       }
     : undefined
 
+  return <ActionMenuMobile id={id} editable={editable} onDelete={handleClickDelete} />
   return (
     <>
       {isDesktop ? (
