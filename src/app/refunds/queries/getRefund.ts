@@ -11,7 +11,6 @@ const GetRefund = z.object({
 })
 
 export default resolver.pipe(resolver.zod(GetRefund), resolver.authorize(), async ({ id }) => {
-  // TODO: in multi-tenant app, you must add validation to ensure correct tenant
   const refund = await db.refund.findFirst({
     where: { id },
     include: {
@@ -32,8 +31,10 @@ export default resolver.pipe(resolver.zod(GetRefund), resolver.authorize(), asyn
     return computeTotalAmount(expense)
   })
 
-  return computeBalances({
+  const refundWithBalances = computeBalances({
     ...refund,
     expenses,
   })
+
+  return computeTotalAmount(refundWithBalances)
 })

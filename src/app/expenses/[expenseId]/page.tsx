@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { Suspense } from "react"
 import { invoke } from "src/app/blitz-server"
 import getExpense from "../queries/getExpense"
-import { Expense } from "../components/Expense"
+import { ExpenseView } from "../components/ExpenseView"
 import Loading from "@/src/app/loading"
 
 export async function generateMetadata({ params }: ExpensePageProps): Promise<Metadata> {
@@ -19,7 +19,7 @@ type ExpensePageProps = {
 export default async function Page({ params }: ExpensePageProps) {
   return (
     <Suspense fallback={Loading()}>
-      <Expense expenseId={Number(params.expenseId)} />
+      <ExpenseView expenseId={Number(params.expenseId)} />
     </Suspense>
   )
 }
