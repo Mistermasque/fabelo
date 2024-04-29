@@ -3,7 +3,7 @@
 import { styled, Theme, CSSObject } from "@mui/material/styles"
 import { Box, Divider, BoxProps } from "@mui/material"
 
-import sections from "./config"
+import config from "./config"
 import { NavSection } from "./NavSection"
 import { NavItem } from "./NavItem"
 import { Fragment } from "react"
@@ -54,6 +54,7 @@ const Drawer = styled(Box, { shouldForwardProp: (prop) => prop !== "open" })<Dra
 interface NavBarDesktopProps extends NavBarProps {}
 
 export function NavBarDesktop({ open }: NavBarDesktopProps) {
+  const sections = config()
   const nbSections = sections.length
 
   return (

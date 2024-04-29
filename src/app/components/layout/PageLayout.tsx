@@ -9,6 +9,7 @@ import "@fontsource/roboto/400.css"
 import "@fontsource/roboto/500.css"
 import "@fontsource/roboto/700.css"
 import { ConfirmProvider } from "material-ui-confirm"
+import { SnackbarProvider } from "notistack"
 
 export function PageLayout({ children }: { children: ReactNode }) {
   const [isNavBarOpened, setisNavBarOpened] = useState(false)
@@ -27,26 +28,30 @@ export function PageLayout({ children }: { children: ReactNode }) {
 
   return (
     <ThemeProvider theme={theme}>
-      <ConfirmProvider>
-        <Box sx={{ display: "flex" }}>
-          <CssBaseline />
+      <CssBaseline />
 
-          <Stack direction="column" sx={{ width: "100%" }}>
-            <TopBar onNavBarToggle={handleNavBarToggle} />
-            <TopBarOffset />
-            <Stack direction="row">
-              <NavBar
-                open={isNavBarOpened}
-                onOpen={handleNavBarOpen}
-                onClose={handleNavBarClose}
-                onToggle={handleNavBarOpen}
-              />
-              <Box component="main" sx={{ p: 2, width: "100%" }}>
-                {children}
-              </Box>
+      <ConfirmProvider>
+        <SnackbarProvider maxSnack={3}>
+          <Box
+            sx={{ display: "flex", backgroundColor: (theme) => theme.palette.background.default }}
+          >
+            <Stack direction="column" sx={{ width: "100%" }}>
+              <TopBar onNavBarToggle={handleNavBarToggle} />
+              <TopBarOffset />
+              <Stack direction="row">
+                <NavBar
+                  open={isNavBarOpened}
+                  onOpen={handleNavBarOpen}
+                  onClose={handleNavBarClose}
+                  onToggle={handleNavBarOpen}
+                />
+                <Box component="main" sx={{ p: 2, width: "100%" }}>
+                  {children}
+                </Box>
+              </Stack>
             </Stack>
-          </Stack>
-        </Box>
+          </Box>
+        </SnackbarProvider>
       </ConfirmProvider>
     </ThemeProvider>
   )

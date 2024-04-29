@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import type { Route } from "next"
 import { Field } from "formik"
 import { TextField } from "formik-mui"
+import { Alert, Button, Stack, Typography } from "@mui/material"
 
 type LoginFormProps = {
   onSuccess?: (user: PromiseReturnType<typeof login>) => void
@@ -20,11 +21,17 @@ export const LoginForm = (props: LoginFormProps) => {
   const router = useRouter()
   const next = useSearchParams()?.get("next")
   return (
-    <>
-      <h1>Login</h1>
+    <Stack gap={2}>
+      <Typography component="h1" variant="h4">
+        Fabelo
+      </Typography>
+      <Typography variant="subtitle2">
+        Application de gestion des dépenses entre Fabien et Elodie
+      </Typography>
+      <Alert severity="info">Pour accéder à l&apos;application, veuillez vous connecter</Alert>
 
       <Form
-        submitText="Login"
+        submitText="Connexion"
         schema={Login}
         initialValues={{ email: "", password: "" }}
         onSubmit={async (values) => {
@@ -48,22 +55,27 @@ export const LoginForm = (props: LoginFormProps) => {
           }
         }}
       >
-        <Field component={TextField} name="email" label="Email" placeholder="Email" />
-        <Field
-          component={TextField}
-          name="password"
-          label="Password"
-          placeholder="Password"
-          type="password"
-        />
-        <div>
-          <Link href={"/forgot-password"}>Forgot your password?</Link>
-        </div>
-      </Form>
+        <Stack gap={2}>
+          <Field component={TextField} name="email" label="Email" placeholder="Email" />
+          <Field
+            component={TextField}
+            name="password"
+            label="Password"
+            placeholder="Password"
+            type="password"
+          />
 
-      <div style={{ marginTop: "1rem" }}>
-        Or <Link href="/signup">Sign Up</Link>
-      </div>
-    </>
+          <Stack gap={2} direction={{ xs: "column", sm: "row" }} justifyContent="space-between">
+            <Link href="/forgot-password" passHref>
+              <Button>Mot de passe oublié</Button>
+            </Link>
+
+            <Link href="/signup" passHref>
+              <Button color="secondary">1ère connexion</Button>
+            </Link>
+          </Stack>
+        </Stack>
+      </Form>
+    </Stack>
   )
 }

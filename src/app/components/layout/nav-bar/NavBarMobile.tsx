@@ -1,4 +1,4 @@
-import sections from "./config"
+import config from "./config"
 import { Divider, Drawer, IconButton, styled } from "@mui/material"
 import { NavSection } from "./NavSection"
 import { NavItem } from "./NavItem"
@@ -18,6 +18,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 interface NavBarMobileProps extends NavBarProps {}
 
 export function NavBarMobile({ onClose, open }: NavBarMobileProps) {
+  const sections = config()
   const nbSections = sections.length
 
   return (

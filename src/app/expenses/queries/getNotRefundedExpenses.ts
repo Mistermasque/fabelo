@@ -20,8 +20,8 @@ export default resolver.pipe(
       orderBy,
       include: {
         details: true,
-        user: { select: { name: true } },
-        parts: { include: { user: { select: { name: true } } } },
+        user: { select: { id: true, name: true } },
+        parts: { include: { user: { select: { id: true, name: true } } } },
       },
     })
 

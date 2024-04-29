@@ -8,7 +8,8 @@ import Loading from "app/loading"
 export async function generateMetadata({ params }: RefundPageProps): Promise<Metadata> {
   const refund = await invoke(getRefund, { id: Number(params.refundId) })
   return {
-    title: `Refund #${refund.id}`,
+    title: `Rbst #${refund.id}`,
+    description: `Remboursement #${refund.id}`,
   }
 }
 

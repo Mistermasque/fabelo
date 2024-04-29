@@ -3,22 +3,24 @@ import { Suspense } from "react"
 import { invoke } from "src/app/blitz-server"
 import getRefund from "../../queries/getRefund"
 import { EditRefund } from "../../components/EditRefund"
+import Loading from "@/src/app/loading"
 
 type EditRefundPageProps = {
   params: { refundId: string }
 }
 
 export async function generateMetadata({ params }: EditRefundPageProps): Promise<Metadata> {
-  const Refund = await invoke(getRefund, { id: Number(params.refundId) })
+  const refund = await invoke(getRefund, { id: Number(params.refundId) })
   return {
-    title: `Edit Refund ${Refund.id} - ${Refund.name}`,
+    title: `Modif. rbst #${refund.id}`,
+    description: `Modification remboursement #${refund.id}`,
   }
 }
 
 export default async function Page({ params }: EditRefundPageProps) {
   return (
     <div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={Loading()}>
         <EditRefund refundId={Number(params.refundId)} />
       </Suspense>
     </div>

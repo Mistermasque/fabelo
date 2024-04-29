@@ -1,4 +1,5 @@
 import { resolver } from "@blitzjs/rpc"
+import { PrismaClientUnknownRequestError } from "@prisma/client/runtime/library"
 import db from "db"
 import { DeleteRefundSchema } from "../schemas"
 

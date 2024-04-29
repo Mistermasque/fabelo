@@ -8,6 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers"
 import { Stack, Alert } from "@mui/material"
 import { LoadingButton } from "@mui/lab"
 import { Save } from "@mui/icons-material"
+import { useSnackbar } from "notistack"
 
 export interface FormProps<S extends z.ZodType<any, any>>
   extends Omit<PropsWithoutRef<JSX.IntrinsicElements["form"]>, "onSubmit"> {
@@ -93,11 +94,13 @@ function FormErrors({ formError, validationErrors }: FormErrorsProps) {
     console.log("Form validation errors", JSON.stringify(validationErrors))
   }
 
-  if (!formError) {
-    return null
+  const { enqueueSnackbar } = useSnackbar()
+
+  if (formError) {
+    enqueueSnackbar(formError, { variant: "error" })
   }
 
-  return <Alert severity="error">{formError}</Alert>
+  return null
 }
 
 export default Form

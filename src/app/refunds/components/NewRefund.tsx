@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@blitzjs/rpc"
 import createRefund from "../mutations/createRefund"
 import { useRouter } from "next/navigation"
 import getNotRefundedExpenses from "app/expenses/queries/getNotRefundedExpenses"
+import { useSnackbar } from "notistack"
 
 export function NewRefund() {
   const [createRefundMutation] = useMutation(createRefund)
@@ -29,6 +30,8 @@ export function NewRefund() {
     isValidated: false,
   }
 
+  const { enqueueSnackbar } = useSnackbar()
+
   return (
     <RefundForm
       expenses={expenses}
@@ -38,10 +41,11 @@ export function NewRefund() {
       onSubmit={async (values) => {
         try {
           const refund = await createRefundMutation(values)
+          enqueueSnackbar("Remboursement #" + refund?.id + " créé", { variant: "success" })
           router.push("/refunds")
         } catch (error: any) {
           return {
-            [FORM_ERROR]: error.toString(),
+            [FORM_ERROR]: error.message,
           }
         }
       }}

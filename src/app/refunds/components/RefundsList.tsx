@@ -11,20 +11,26 @@ import deleteRefund from "../mutations/deleteRefund"
 import { RefundItem } from "./RefundItem"
 import { usePageTitle } from "app/hooks/usePageTitle"
 import { useEffect } from "react"
+import { useSnackbar } from "notistack"
 
 const ITEMS_PER_PAGE = 100
 
 export function RefundsList() {
   const { setPageTitle } = usePageTitle()
   const [deleteRefundMutation] = useMutation(deleteRefund)
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     setPageTitle("Liste des remboursements")
   })
 
   const handleDeleteRefund = async (id: number) => {
-    await deleteRefundMutation({ id })
-    refetch()
+    try {
+      await deleteRefundMutation({ id })
+      refetch()
+    } catch (error: any) {
+      enqueueSnackbar(error.message, { variant: "error" })
+    }
   }
 
   const searchparams = useSearchParams()!
