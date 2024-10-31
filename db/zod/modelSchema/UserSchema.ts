@@ -11,7 +11,9 @@ export const UserSchema = z.object({
   name: z.string(),
   email: z.string(),
   hashedPassword: z.string().nullable(),
-  role: z.string(),
+  role: z.string().nullable(),
+  isActive: z.boolean(),
+  lastConnection: z.coerce.date().nullable(),
 })
 
 export type User = z.infer<typeof UserSchema>

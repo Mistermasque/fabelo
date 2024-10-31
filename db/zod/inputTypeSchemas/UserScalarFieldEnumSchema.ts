@@ -8,6 +8,8 @@ export const UserScalarFieldEnumSchema = z.enum([
   "email",
   "hashedPassword",
   "role",
+  "isActive",
+  "lastConnection",
 ])
 
 export default UserScalarFieldEnumSchema

@@ -6,6 +6,7 @@ import { useMutation } from "@blitzjs/rpc"
 import { useRouter } from "next/navigation"
 import { Field } from "formik"
 import { TextField } from "formik-mui"
+import { Alert, Stack, Typography } from "@mui/material"
 
 type SignupFormProps = {
   onSuccess?: () => void
@@ -16,11 +17,20 @@ export const SignupForm = (props: SignupFormProps) => {
   const router = useRouter()
 
   return (
-    <div>
-      <h1>Create an Account</h1>
+    <Stack gap={2}>
+      <Typography component="h1" variant="h4">
+        Fabelo
+      </Typography>
+      <Typography variant="subtitle2">
+        Application de gestion des dépenses entre Fabien et Elodie
+      </Typography>
+      <Alert severity="warning">
+        Vous devez avoir reçu un mail indiquant que vous pouvez créer votre compte pour pouvoir le
+        créer.
+      </Alert>
 
       <Form
-        submitText="Create Account"
+        submitText="Création du compte"
         schema={Signup}
         initialValues={{ email: "", password: "", name: "" }}
         onSubmit={async (values) => {
@@ -48,6 +58,6 @@ export const SignupForm = (props: SignupFormProps) => {
           type="password"
         />
       </Form>
-    </div>
+    </Stack>
   )
 }

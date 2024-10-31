@@ -18,7 +18,6 @@ import {
 import { ArrowBack, ArrowForward, Delete, Edit } from "@mui/icons-material"
 import { useEffect } from "react"
 import { usePageTitle } from "app/hooks/usePageTitle"
-import Grid from "@mui/material/Unstable_Grid2"
 import { BalancesDetails } from "./BalancesDetails"
 import Link from "next/link"
 import { ExpenseItem } from "app/expenses/components/ExpenseItem"

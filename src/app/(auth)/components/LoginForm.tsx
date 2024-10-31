@@ -45,11 +45,12 @@ export const LoginForm = (props: LoginFormProps) => {
             }
           } catch (error: any) {
             if (error instanceof AuthenticationError) {
-              return { [FORM_ERROR]: "Sorry, those credentials are invalid" }
+              return { [FORM_ERROR]: "E-mail ou mot de passe invalide." }
             } else {
               return {
                 [FORM_ERROR]:
-                  "Sorry, we had an unexpected error. Please try again. - " + error.toString(),
+                  "Désolé, une erreur inattendue s'est produite. Merci de réessayer. - " +
+                  error.toString(),
               }
             }
           }

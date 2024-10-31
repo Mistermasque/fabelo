@@ -7,7 +7,9 @@ CREATE TABLE
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "hashedPassword" TEXT,
-    "role" TEXT NOT NULL DEFAULT 'USER'
+    "role" TEXT DEFAULT 'USER',
+    "isActive" BOOLEAN NOT NULL DEFAULT false,
+    "lastConnection" DATETIME
   );
 
 -- CreateTable

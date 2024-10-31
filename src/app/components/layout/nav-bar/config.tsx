@@ -3,6 +3,7 @@ import {
   FactCheck,
   Lock,
   Logout,
+  ManageAccounts,
   NoteAdd,
   Person,
   ViewList,
@@ -48,6 +49,16 @@ export default function SectionsConfig(): SectionType[] {
           title: "Liste des remboursements",
           icon: <FactCheck />,
           path: "/refunds",
+        },
+      ],
+    },
+    {
+      title: "Administration",
+      items: [
+        {
+          title: "Gestion des utilisateurs",
+          icon: <ManageAccounts />,
+          path: "/users",
         },
       ],
     },

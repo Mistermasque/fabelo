@@ -37,6 +37,8 @@ export function Form<S extends z.ZodType<any, any>>({
   ...props
 }: FormProps<S>) {
   const [formError, setFormError] = useState<string | null>(null)
+  const { enqueueSnackbar } = useSnackbar()
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={fr}>
       <Formik
@@ -49,6 +51,7 @@ export function Form<S extends z.ZodType<any, any>>({
           if (FORM_ERROR) {
             console.log("FORM_ERROR", FORM_ERROR)
             setFormError(FORM_ERROR)
+            enqueueSnackbar(FORM_ERROR, { variant: "error" })
           }
 
           if (Object.keys(otherErrors).length > 0) {
@@ -61,7 +64,6 @@ export function Form<S extends z.ZodType<any, any>>({
           <form onSubmit={handleSubmit} className="form" {...props}>
             {children}
             <Stack spacing={2} sx={{ mt: 3 }}>
-              <FormErrors validationErrors={errors} formError={formError} />
               {submitText && (
                 <Stack direction="row" justifyContent="flex-end">
                   <LoadingButton
@@ -82,25 +84,6 @@ export function Form<S extends z.ZodType<any, any>>({
       </Formik>
     </LocalizationProvider>
   )
-}
-
-interface FormErrorsProps {
-  formError: string | null
-  validationErrors: FormikErrors<any>
-}
-
-function FormErrors({ formError, validationErrors }: FormErrorsProps) {
-  if (validationErrors && JSON.stringify(validationErrors) !== "{}") {
-    console.log("Form validation errors", JSON.stringify(validationErrors))
-  }
-
-  const { enqueueSnackbar } = useSnackbar()
-
-  if (formError) {
-    enqueueSnackbar(formError, { variant: "error" })
-  }
-
-  return null
 }
 
 export default Form
