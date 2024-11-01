@@ -1,5 +1,5 @@
-import {ResetPasswordForm} from "../components/ResetPasswordForm"
+import { ResetPassword } from "../components/ResetPassword"
 
 export default function ResetPasswordPage() {
-  return <ResetPasswordForm />
+  return <ResetPassword />
 }

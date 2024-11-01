@@ -1,5 +1,6 @@
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-
+import { SimpleRolesIsAuthorized } from "@blitzjs/auth"
+import { User } from "@/db"
+import type { Role } from "@/src/app/users/schemas"
 /**
  * Type utilitaire permettant de dériver d'un type en rendant une propriété facultative
  * Ex: type MakePersonInput = PartialBy<{name: string, id: number}, 'name'> -> {name?: string, id: number}
@@ -14,3 +15,16 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
  */
 export type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never
+
+export type { Role } from "@/src/app/users/schemas"
+
+declare module "@blitzjs/auth" {
+  export interface Session {
+    isAuthorized: SimpleRolesIsAuthorized<Role>
+    PublicData: {
+      userId: User["id"]
+      role: Role
+      views?: number
+    }
+  }
+}

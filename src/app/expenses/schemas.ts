@@ -1,22 +1,13 @@
 import { Prisma } from "@prisma/client"
 import { z } from "zod"
-import Decimal from "decimal.js"
-import { isValidDecimalInput, DecimalJsLikeSchema } from "@/db/zod/inputTypeSchemas"
+import { ZInputPositiveDecimal } from "@/src/core/zod-helpers"
 
 ////////////////////////// EXPENSE DETAILS ////////////////////////
 
 export const CreateExpenseDetailSchema = z.object({
   expenseId: z.number().int().optional(),
   date: z.coerce.date(),
-  amount: z
-    .union([
-      z.number(),
-      z.string(),
-      z.instanceof(Decimal),
-      z.instanceof(Prisma.Decimal),
-      DecimalJsLikeSchema,
-    ])
-    .refine((v) => isValidDecimalInput(v) && v != 0, { message: "Doit être un nombre non null" }),
+  amount: ZInputPositiveDecimal,
   comment: z.string().optional().nullable(),
 })
 
@@ -24,15 +15,7 @@ export type CreateExpenseDetailInput = z.input<typeof CreateExpenseDetailSchema>
 
 export const UpdateExpenseDetailSchema = z.object({
   date: z.coerce.date(),
-  amount: z
-    .union([
-      z.number(),
-      z.string(),
-      z.instanceof(Decimal),
-      z.instanceof(Prisma.Decimal),
-      DecimalJsLikeSchema,
-    ])
-    .refine((v) => isValidDecimalInput(v) && v != 0, { message: "Doit être un nombre non null" }),
+  amount: ZInputPositiveDecimal,
   comment: z.string().optional().nullable(),
 })
 
@@ -48,28 +31,8 @@ export type DeleteExpenseDetailInput = z.input<typeof DeleteExpenseDetailSchema>
 
 export const CreateExpenseUserPartSchema: z.ZodType<Prisma.ExpenseUserPartUncheckedCreateWithoutExpenseInput> =
   z.object({
-    part: z
-      .union([
-        z.number(),
-        z.string(),
-        z.instanceof(Decimal),
-        z.instanceof(Prisma.Decimal),
-        DecimalJsLikeSchema,
-      ])
-      .refine((v) => isValidDecimalInput(v) && v >= 0, { message: "Doit être un nombre positif" })
-      .optional()
-      .nullable(),
-    amount: z
-      .union([
-        z.number(),
-        z.string(),
-        z.instanceof(Decimal),
-        z.instanceof(Prisma.Decimal),
-        DecimalJsLikeSchema,
-      ])
-      .refine((v) => isValidDecimalInput(v) && v >= 0, {
-        message: "Doit être un nombre positif",
-      }),
+    part: ZInputPositiveDecimal.optional().nullable(),
+    amount: ZInputPositiveDecimal,
     isAmount: z.boolean().optional(),
     userId: z.number(),
     expenseId: z.number().int().optional(),
@@ -78,27 +41,8 @@ export const CreateExpenseUserPartSchema: z.ZodType<Prisma.ExpenseUserPartUnchec
 export type CreateExpenseUserPartInput = z.input<typeof CreateExpenseUserPartSchema>
 
 export const UpdateExpenseUserPartSchema = z.object({
-  part: z
-    .union([
-      z.number(),
-      z.string(),
-      z.instanceof(Decimal),
-      z.instanceof(Prisma.Decimal),
-      DecimalJsLikeSchema,
-    ])
-
-    .refine((v) => isValidDecimalInput(v) && v >= 0, { message: "Doit être un nombre positif" })
-    .optional()
-    .nullable(),
-  amount: z
-    .union([
-      z.number(),
-      z.string(),
-      z.instanceof(Decimal),
-      z.instanceof(Prisma.Decimal),
-      DecimalJsLikeSchema,
-    ])
-    .refine((v) => isValidDecimalInput(v) && v >= 0, { message: "Doit être un nombre positif" }),
+  part: ZInputPositiveDecimal.optional().nullable(),
+  amount: ZInputPositiveDecimal,
   isAmount: z.boolean().optional(),
   userId: z.number(),
 })
@@ -143,7 +87,7 @@ export const CreateExpenseSchema = z
 
       return (
         totalAmountParts == totalAmount &&
-        schema.parts.findIndex((part) => part.amount > totalAmount) === -1
+        schema.parts.findIndex((part) => Number(part.amount) > totalAmount) === -1
       )
     }
     return true
@@ -184,7 +128,7 @@ export const UpdateExpenseSchema = z
 
       return (
         totalAmountParts == totalAmount &&
-        schema.parts.findIndex((part) => part.amount > totalAmount) === -1
+        schema.parts.findIndex((part) => Number(part.amount) > totalAmount) === -1
       )
     }
     return true

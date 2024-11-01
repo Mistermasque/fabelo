@@ -3,7 +3,7 @@ import { AuthenticationError, PromiseReturnType } from "blitz"
 import Link from "next/link"
 import { Form, FORM_ERROR } from "src/app/components/Form"
 import login from "../mutations/login"
-import { Login } from "../validations"
+import { LoginSchema } from "../schemas"
 import { useMutation } from "@blitzjs/rpc"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "next/navigation"
@@ -12,11 +12,11 @@ import { Field } from "formik"
 import { TextField } from "formik-mui"
 import { Alert, Button, Stack, Typography } from "@mui/material"
 
-type LoginFormProps = {
+type LoginProps = {
   onSuccess?: (user: PromiseReturnType<typeof login>) => void
 }
 
-export const LoginForm = (props: LoginFormProps) => {
+export const Login = (props: LoginProps) => {
   const [loginMutation] = useMutation(login)
   const router = useRouter()
   const next = useSearchParams()?.get("next")
@@ -32,7 +32,7 @@ export const LoginForm = (props: LoginFormProps) => {
 
       <Form
         submitText="Connexion"
-        schema={Login}
+        schema={LoginSchema}
         initialValues={{ email: "", password: "" }}
         onSubmit={async (values) => {
           try {
@@ -71,7 +71,7 @@ export const LoginForm = (props: LoginFormProps) => {
               <Button>Mot de passe oublié</Button>
             </Link>
 
-            <Link href="/signup" passHref>
+            <Link href="/reset-activation" passHref>
               <Button color="secondary">1ère connexion</Button>
             </Link>
           </Stack>

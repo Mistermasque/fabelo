@@ -13,14 +13,19 @@ generator client {
 // --------------------------------------
 
 model User {
-  id             Int       @id @default(autoincrement())
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  name           String
-  email          String    @unique
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  name           String?
+  email          String   @unique
   hashedPassword String?
-  role           String?   @default("USER")
-  isActive       Boolean   @default(false)
+  role           String   @default("USER")
+  // Modifier le role par le type ci-dessous une fois passé en postgres
+  // role           Role   @default(USER)
+  status         String   @default("NOT_ACTIVATED")
+  // Modifier le status par le type ci-dessous une fois passé en postgres
+  // status           UserStatus   @default(NOT_ACTIVATED)
+
   lastConnection DateTime?
 
   tokens           Token[]
@@ -29,6 +34,19 @@ model User {
   refunds          Refund[]
   expenses         Expense[]
 }
+
+// Activer cet enum une fois passé à postgres
+// enum Role {
+//   USER
+//   ADMIN
+// }
+
+// Activer cet enum une fois passé à postgres
+// enum UserStatus {
+//   NOT_ACTIVATED
+//   ACTIVE
+//   DISABLED
+// }
 
 model Session {
   id                 Int       @id @default(autoincrement())
@@ -67,6 +85,9 @@ model Token {
 //       See: https://blitzjs.com/docs/database-overview#switch-to-postgre-sql
 // enum TokenType {
 //   RESET_PASSWORD
+//   NEW_USER
+//   ACTIVATE_USER
+//   CHANGE_EMAIL
 // }
 
 model Expense {

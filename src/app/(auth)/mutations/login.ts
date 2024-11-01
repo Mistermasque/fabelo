@@ -1,9 +1,9 @@
 import { resolver } from "@blitzjs/rpc"
 import { AuthenticationError } from "blitz"
 import db from "db"
-import { Login } from "../validations"
+import { Login } from "../schemas"
 import { SecurePassword } from "@blitzjs/auth/secure-password"
-import { Role } from "types"
+import { Role } from "@/src/core/types"
 
 export const authenticateUser = async (rawEmail: string, rawPassword: string) => {
   const { email, password } = Login.parse({ email: rawEmail, password: rawPassword })

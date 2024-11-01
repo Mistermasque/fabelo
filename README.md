@@ -81,11 +81,11 @@ fabelo
 │   ├── app
 │   │   ├── (auth)
 │   │   │   ├── components
-│   │   │   │   ├── ForgotPasswordForm.tsx
-│   │   │   │   ├── LoginForm.tsx
+│   │   │   │   ├── ForgotPassword.tsx
+│   │   │   │   ├── Login.tsx
 │   │   │   │   ├── LogoutButton.tsx
-│   │   │   │   ├── ResetPasswordForm.tsx
-│   │   │   │   └── SignupForm.tsx
+│   │   │   │   ├── ResetPassword.tsx
+│   │   │   │   └── Activate.tsx
 │   │   │   ├── forgot-password
 │   │   │   │   └── page.tsx
 │   │   │   ├── layout.tsx
@@ -99,10 +99,10 @@ fabelo
 │   │   │   │   ├── logout.ts
 │   │   │   │   ├── resetPassword.test.ts
 │   │   │   │   ├── resetPassword.ts
-│   │   │   │   └── signup.ts
+│   │   │   │   └── activate.ts
 │   │   │   ├── reset-password
 │   │   │   │   └── page.tsx
-│   │   │   ├── signup
+│   │   │   ├── activate
 │   │   │   │   └── page.tsx
 │   │   │   └── validations.ts
 │   │   ├── blitz-auth-config.ts

@@ -9,7 +9,7 @@ export { FORM_ERROR } from "app/components/Form"
 /**
  * Formulaire d'édition d'un utilisateur
  */
-export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
+export function UserForm<S extends z.ZodType<any, any>>(props: FormProps<S>) {
   const roleOpts = [
     {
       title: "Administrateur",
