@@ -6,26 +6,24 @@ import getExpense from "../queries/getExpense"
 import { useEffect } from "react"
 import deleteExpense from "../mutations/deleteExpense"
 import {
+  Box,
   Button,
   Chip,
-  IconButton,
+  Divider,
   ListItemIcon,
   ListItemText,
   MenuItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Stack,
   Typography,
 } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2"
-import { ArrowBack, Delete, Edit, FactCheck } from "@mui/icons-material"
+import { Delete, Edit, FactCheck } from "@mui/icons-material"
 import { RefundDate } from "app/refunds/components/RefundDate"
 import Link from "next/link"
 import { SubMenu } from "../../components/layout/SubMenu"
 import { useConfirm } from "material-ui-confirm"
+import { Decimal } from "@prisma/client/runtime/library"
+import { ExpenseDetail, ExpenseUserPart } from "@prisma/client"
 
 export interface ExpenseViewProps {
   expenseId: number
@@ -94,19 +92,13 @@ export function ExpenseView({ expenseId }: ExpenseViewProps) {
       </SubMenu>
       <Grid container spacing={1} sx={{ width: "100%" }}>
         <Grid container xs={12} alignItems="center">
-          <Grid>
-            <IconButton size="large" onClick={handleGoBackClick}>
-              <ArrowBack />
-            </IconButton>
-          </Grid>
           <Grid flexGrow={1}>
-            <Typography component="h2" variant="h4">
+            <Typography component="h2" variant="h5">
               {expense.title}
             </Typography>
           </Grid>
           <Grid>
             <Chip
-              variant="outlined"
               label={expense.totalAmount + " €"}
               color={expense.totalAmount >= 0 ? "error" : "success"}
             />
@@ -151,57 +143,69 @@ export function ExpenseView({ expenseId }: ExpenseViewProps) {
             </>
           ) : null}
         </Grid>
-        <Grid xs={12}>
-          <Typography component="h3" variant="h5">
+        <Grid xs={12} md={6}>
+          <Typography component="h3" variant="h6">
             Détails
           </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Montant</TableCell>
-                  <TableCell>Commentaire</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {expense.details.map((detail, index) => (
-                  <TableRow hover key={index}>
-                    <TableCell>{detail.date.toLocaleDateString()}</TableCell>
-                    <TableCell>{detail.amount + " €"}</TableCell>
-                    <TableCell>{detail.comment}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Stack gap={1} divider={<Divider orientation="horizontal" flexItem />}>
+            {expense.details.map((detail, index) => (
+              <DetailItem key={index} detail={detail}></DetailItem>
+            ))}
+          </Stack>
         </Grid>
-        <Grid xs={12}>
-          <Typography component="h3" variant="h5">
+        <Grid xs={12} md={6}>
+          <Typography component="h3" variant="h6">
             Parts
           </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Qui</TableCell>
-                  <TableCell>Part</TableCell>
-                  <TableCell>Montant</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {expense.parts.map((part, index) => (
-                  <TableRow hover key={index}>
-                    <TableCell>{part.user.name}</TableCell>
-                    <TableCell>{part.part?.toString()}</TableCell>
-                    <TableCell>{part.amount + " €"}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Stack gap={1} divider={<Divider orientation="horizontal" flexItem />}>
+            {expense.parts.map((part, index) => (
+              <PartItem key={index} part={part} />
+            ))}
+          </Stack>
         </Grid>
       </Grid>
     </>
+  )
+}
+
+type DetailItemProps = {
+  detail: ExpenseDetail
+}
+
+const DetailItem = ({ detail }: DetailItemProps) => {
+  return (
+    <Stack>
+      <Stack direction="row" alignItems="center" justifyContent="space-between">
+        {detail.date.toLocaleDateString()}
+        <Chip
+          size="small"
+          label={detail.amount + " €"}
+          color={Number(detail.amount) >= 0 ? "error" : "success"}
+          variant="outlined"
+        />
+      </Stack>
+      <Typography component="p" variant="body1" whiteSpace="pre-wrap">
+        {detail.comment}
+      </Typography>
+    </Stack>
+  )
+}
+
+type PartItemProps = {
+  part: {
+    user: {
+      name: string
+    }
+    part: number | Decimal | null
+    amount: number | Decimal
+  }
+}
+const PartItem = ({ part }: PartItemProps) => {
+  return (
+    <Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
+      <Box flexGrow={1}>{part.user.name + " (" + part.part + " part)"}</Box>
+
+      <Chip size="small" label={part.amount + " €"} variant="outlined" />
+    </Stack>
   )
 }

@@ -1,10 +1,10 @@
 "use client"
 import { useQuery } from "@blitzjs/rpc"
 import { usePageTitle } from "app/hooks/usePageTitle"
-import { IconButton, List, ListItem } from "@mui/material"
+import { IconButton, List, ListItem, ListItemButton } from "@mui/material"
 import { useEffect } from "react"
 import getUsers from "../queries/getUsers"
-import { ArrowForward } from "@mui/icons-material"
+import { ArrowForward, Delete } from "@mui/icons-material"
 import Link from "next/link"
 import { UserItem } from "./UserItem"
 
@@ -23,25 +23,18 @@ export function UsersList() {
     }
   )
 
+  const handleClickEdit = (input) => {
+    console.log(input)
+  }
+  const handleClickDelete = () => {}
+
   return (
     <List>
       {users.map((user) => (
-        <ListItem
-          key={user.id}
-          sx={{
-            "&:hover": {
-              backgroundColor: (theme) => theme.palette.action.hover,
-            },
-          }}
-          secondaryAction={
-            <Link href={`/users/${user.id}`} passHref>
-              <IconButton edge="end" aria-label="Détail utilisateur">
-                <ArrowForward />
-              </IconButton>
-            </Link>
-          }
-        >
-          <UserItem user={user} />
+        <ListItem key={user.id} disablePadding>
+          <ListItemButton onClick={handleClickEdit}>
+            <UserItem user={user} />
+          </ListItemButton>
         </ListItem>
       ))}
     </List>

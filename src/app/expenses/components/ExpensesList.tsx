@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation"
 import { usePathname } from "next/navigation"
 import { Route } from "next"
 import { usePageTitle } from "app/hooks/usePageTitle"
-import { IconButton, List, ListItem } from "@mui/material"
+import { Divider, IconButton, List, ListItem, ListItemButton } from "@mui/material"
 import { useEffect } from "react"
 import deleteExpense from "../mutations/deleteExpense"
 import { ExpensesFilterForm } from "./ExpensesFilterForms"
@@ -58,14 +58,18 @@ export function ExpensesList() {
   const pathname = usePathname()
 
   const goToPreviousPage = () => {
-    const params = new URLSearchParams(searchparams)
+    const params = new URLSearchParams(searchparams.toString())
     params.set("page", (page - 1).toString())
     router.push((pathname + "?" + params.toString()) as Route)
   }
   const goToNextPage = () => {
-    const params = new URLSearchParams(searchparams)
+    const params = new URLSearchParams(searchparams.toString())
     params.set("page", (page + 1).toString())
     router.push((pathname + "?" + params.toString()) as Route)
+  }
+
+  const handleClickView = (id: number) => {
+    router.push(`/expenses/${id}`)
   }
 
   return (
@@ -75,23 +79,14 @@ export function ExpensesList() {
       </SubMenuDrawerBox>
       <List>
         {expenses.map((expense) => (
-          <ListItem
-            key={expense.id}
-            sx={{
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.action.hover,
-              },
-            }}
-            secondaryAction={
-              <Link href={`/expenses/${expense.id}`} passHref>
-                <IconButton edge="end" aria-label="voir dépense">
-                  <ArrowForward />
-                </IconButton>
-              </Link>
-            }
-          >
-            <ExpenseItem expense={expense} />
-          </ListItem>
+          <>
+            <ListItem key={expense.id} disablePadding>
+              <ListItemButton onClick={() => handleClickView(expense.id)} sx={{ px: 0 }}>
+                <ExpenseItem expense={expense} />
+              </ListItemButton>
+            </ListItem>
+            <Divider />
+          </>
         ))}
       </List>
     </>

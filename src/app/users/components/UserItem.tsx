@@ -1,17 +1,20 @@
 import { Chip, Typography } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2"
-import { formatDistance } from "date-fns"
+import { formatDistanceToNowStrict } from "date-fns"
 import { fr as frLocale } from "date-fns/locale/fr"
+import { Role, UserStatus } from "../schemas"
+import { Person, PersonOff, PersonOutline } from "@mui/icons-material"
 
 export interface UserItemProps {
   user: {
     id: number
-    name: string | null
-    isActive: boolean
+    name: string
+    status: UserStatus
     email: string
-    role: string | null
+    role: Role | null
     lastConnection: Date | null
     roleText: string
+    statusText: string
   }
 }
 /**
@@ -19,35 +22,102 @@ export interface UserItemProps {
  */
 export function UserItem({ user }: UserItemProps) {
   const lastConnection = user.lastConnection
-    ? "Dernière connexion " + formatDistance(user.lastConnection, new Date(), { locale: frLocale })
+    ? "Dernière connexion " + formatDistanceToNowStrict(user.lastConnection, { locale: frLocale })
     : "Jamais connecté"
 
   return (
-    <Grid container sx={{ width: "100%" }} spacing={{ xs: 1, sm: 2 }} alignItems="center">
-      <Grid xs={12} sm={6} md={3}>
-        <Typography variant="body1" component="h2">
-          <strong>{user.name}</strong>
-        </Typography>
+    <Grid container sx={{ width: "100%" }} spacing={1} alignItems="center">
+      <Grid container xs={12} sm={12} md={6}>
+        <Grid flexGrow={{ xs: 1, sm: 1 }} md={2}>
+          <Typography variant="body1" component="h2">
+            <strong>{user.name}</strong>
+          </Typography>
+        </Grid>
+
+        <Grid
+          sx={{
+            display: { xs: "inherit", sm: "none", md: "none" },
+          }}
+        >
+          <RoleAndStatusChip user={user} />
+        </Grid>
+
+        <Grid
+          sx={{
+            display: { xs: "none", sm: "inherit", md: "inherit" },
+          }}
+          md={2}
+        >
+          <RoleChip user={user} />
+        </Grid>
+        <Grid
+          sx={{
+            display: { xs: "none", sm: "inherit", md: "inherit" },
+          }}
+          md={2}
+        >
+          <StatusChip user={user} />
+        </Grid>
       </Grid>
-      <Grid xs={12} sm={6} md={3}>
+      <Grid sm={6} md={3}>
         <Typography variant="body1">{user.email}</Typography>
       </Grid>
-      <Grid xs={4} sm={2} md={2}>
-        {user.isActive ? (
-          user.role == "ADMIN" ? (
-            <Chip color="error" label={user.roleText} />
-          ) : (
-            <Chip color="primary" label={user.roleText} />
-          )
-        ) : (
-          <Chip variant="outlined" label="inactif" />
-        )}
-      </Grid>
-      <Grid xs={8} sm={10} md={4}>
+      <Grid sm={6} md={3}>
         <Typography variant="body1" component="em">
           {lastConnection}
         </Typography>
       </Grid>
     </Grid>
+  )
+}
+
+const RoleChip = ({ user }: UserItemProps) => {
+  switch (user.role) {
+    case "ADMIN":
+      return <Chip color="error" label={user.roleText} />
+    case "USER":
+      return <Chip label={user.roleText} />
+    case null:
+      return <Chip variant="outlined" label={user.roleText} />
+  }
+}
+
+const StatusChip = ({ user }: UserItemProps) => {
+  switch (user.status) {
+    case "DISABLED":
+      return <Chip label={user.statusText} />
+    case "ACTIVE":
+      return <Chip color="primary" label={user.statusText} />
+    case "NOT_ACTIVATED":
+      return <Chip color="primary" variant="outlined" label={user.statusText} />
+  }
+}
+
+const RoleAndStatusChip = ({ user }: UserItemProps) => {
+  const title = user.roleText + " - " + user.statusText
+
+  if (user.status == "DISABLED") {
+    return (
+      <Chip
+        sx={{ paddingLeft: "0.7em", marginRight: "-1.5em" }}
+        icon={<PersonOff />}
+        variant="outlined"
+        title={title}
+      />
+    )
+  }
+
+  const variant = user.status === "NOT_ACTIVATED" ? "outlined" : undefined
+  const icon = user.status === "NOT_ACTIVATED" ? <PersonOutline /> : <Person />
+  const color = user.role === "ADMIN" ? "error" : undefined
+
+  return (
+    <Chip
+      sx={{ paddingLeft: "0.7em", marginRight: "-1.5em" }}
+      color={color}
+      variant={variant}
+      icon={icon}
+      title={title}
+    />
   )
 }

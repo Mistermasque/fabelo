@@ -45,7 +45,7 @@ export function PageLayout({ children }: { children: ReactNode }) {
                   onClose={handleNavBarClose}
                   onToggle={handleNavBarOpen}
                 />
-                <Box component="main" sx={{ p: 2, width: "100%" }}>
+                <Box component="main" sx={{ p: { xs: 1, sm: 1, md: 2 }, width: "100%" }}>
                   {children}
                 </Box>
               </Stack>

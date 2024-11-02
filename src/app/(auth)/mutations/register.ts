@@ -12,13 +12,23 @@ export default resolver.pipe(
   async ({ email, role }) => {
     const data = {
       email,
-      role: role ?? undefined,
+      role: role,
+      name: "UNDEFINED",
+      status: "NOT_ACTIVATED",
     }
 
-    // 1. Création de l'utilisateur (renvoie une erreur si le mail existe déjà)
-    const user = await db.user.create({
-      data,
+    // Recherche d'un utilisateur existant désactivé
+    const existingUser = await db.user.findFirst({
+      where: { email, status: "DISABLED" },
+      select: { id: true },
     })
+
+    // 1. Création ou mise à jour de l'utilisateur (renvoie une erreur si le mail existe déjà)
+    const user = existingUser
+      ? await db.user.update({ where: { id: existingUser.id }, data })
+      : await db.user.create({
+          data,
+        })
 
     // 2. Création du Token de création de l'utilisateur
     const token = generateToken()

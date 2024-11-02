@@ -1,13 +1,13 @@
 import { Prisma } from "@prisma/client"
 import { z } from "zod"
-import { ZInputPositiveDecimal } from "@/src/core/zod-helpers"
+import { DecimalField, PositiveDecimalField } from "@/src/utils/zod-helpers"
 
 ////////////////////////// EXPENSE DETAILS ////////////////////////
 
 export const CreateExpenseDetailSchema = z.object({
   expenseId: z.number().int().optional(),
   date: z.coerce.date(),
-  amount: ZInputPositiveDecimal,
+  amount: DecimalField,
   comment: z.string().optional().nullable(),
 })
 
@@ -15,7 +15,7 @@ export type CreateExpenseDetailInput = z.input<typeof CreateExpenseDetailSchema>
 
 export const UpdateExpenseDetailSchema = z.object({
   date: z.coerce.date(),
-  amount: ZInputPositiveDecimal,
+  amount: DecimalField,
   comment: z.string().optional().nullable(),
 })
 
@@ -31,8 +31,8 @@ export type DeleteExpenseDetailInput = z.input<typeof DeleteExpenseDetailSchema>
 
 export const CreateExpenseUserPartSchema: z.ZodType<Prisma.ExpenseUserPartUncheckedCreateWithoutExpenseInput> =
   z.object({
-    part: ZInputPositiveDecimal.optional().nullable(),
-    amount: ZInputPositiveDecimal,
+    part: PositiveDecimalField.optional().nullable(),
+    amount: PositiveDecimalField,
     isAmount: z.boolean().optional(),
     userId: z.number(),
     expenseId: z.number().int().optional(),
@@ -41,8 +41,8 @@ export const CreateExpenseUserPartSchema: z.ZodType<Prisma.ExpenseUserPartUnchec
 export type CreateExpenseUserPartInput = z.input<typeof CreateExpenseUserPartSchema>
 
 export const UpdateExpenseUserPartSchema = z.object({
-  part: ZInputPositiveDecimal.optional().nullable(),
-  amount: ZInputPositiveDecimal,
+  part: PositiveDecimalField.optional().nullable(),
+  amount: PositiveDecimalField,
   isAmount: z.boolean().optional(),
   userId: z.number(),
 })

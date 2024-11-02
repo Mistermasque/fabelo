@@ -9,7 +9,8 @@ import { useQuery } from "@blitzjs/rpc"
 import getUsers from "app/users/queries/getUsers"
 import LabeledCheckBoxField from "app/components/LabeledCheckBoxField"
 import { Chip, Stack } from "@mui/material"
-import { TextField } from "formik-mui"
+import { CheckboxWithLabel, TextField } from "formik-mui"
+import { SelectWithOptions } from "../../components/formik-mui/SelectWithOptions"
 
 export { FORM_ERROR } from "src/app/components/Form"
 
@@ -22,6 +23,10 @@ export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
     }
   )
 
+  const userOpts = users.map(({ name, id }) => {
+    return { title: name, value: id }
+  })
+
   const [totalAmount, setTotalAmount] = useState(0)
 
   const handleUpdateDetailAmount = (total: number) => {
@@ -33,18 +38,26 @@ export function ExpenseForm<S extends z.ZodType<any, any>>(props: FormProps<S>) 
       <Stack spacing={3}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
           <Field component={TextField} label="Titre" name="title" sx={{ flexGrow: 1 }} />
-          <LabeledSelectField
+          <Field
+            component={SelectWithOptions}
             name="userId"
             label="Qui a payé"
-            options={users}
-            optionAttributeTitle="name"
-            optionAttributeValue="id"
+            options={userOpts}
           />
         </Stack>
         <ExpenseDetailsInputs onUpdateTotalAmount={handleUpdateDetailAmount} />
 
-        <Chip label={"Montant total : " + totalAmount + " €"} />
-        <LabeledCheckBoxField name="isDefaultParts" label="Utiliser la répartition par défaut" />
+        <Chip
+          color={totalAmount > 0 ? "error" : "success"}
+          label={"Montant total : " + totalAmount + " €"}
+        />
+        <Field
+          component={CheckboxWithLabel}
+          type="checkbox"
+          name="isDefaultParts"
+          Label={{ label: "Utiliser la répartition par défaut" }}
+        />
+
         <ExpensePartsInputs totalAmount={totalAmount} />
       </Stack>
     </Form>

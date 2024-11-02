@@ -1,4 +1,4 @@
-import { Chip, Typography } from "@mui/material"
+import { Chip, Divider, Stack, Typography } from "@mui/material"
 import Grid from "@mui/material/Unstable_Grid2"
 import { Decimal } from "@prisma/client/runtime/library"
 import { RefundDate, RefundDateProps } from "app/refunds/components/RefundDate"
@@ -30,34 +30,28 @@ export interface ExpenseItemProps {
  */
 export function ExpenseItem({ expense }: ExpenseItemProps) {
   return (
-    <Grid container spacing={1} sx={{ width: "100%" }}>
-      <Grid container xs={7} sm={10}>
-        <Grid>
-          <Typography variant="body1" component="h2">
-            <strong>
-              {expense.details ? expense.details[0].date.toLocaleDateString() + " - " : null}
-              {expense.title}
-            </strong>
-          </Typography>
-        </Grid>
-        <Grid container alignItems="center" xs={12}>
-          <Grid>
-            <Typography variant="body1" component="em">
-              {"Payé par : " + expense.user.name}
-            </Typography>
-          </Grid>
-          <Grid>
-            <RefundDate refund={expense.refund !== undefined ? expense.refund : undefined} />
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid container xs={5} sm={2} justifyContent="flex-end" alignContent="center">
+    <Stack width="100%" gap={0.5}>
+      <Stack direction="row" alignItems="flex-start" justifyContent="space-between">
+        <Typography variant="h6" component="h2" noWrap>
+          {expense.title}
+        </Typography>
         <Chip
           variant="outlined"
           label={expense.totalAmount + " €"}
           color={expense.totalAmount >= 0 ? "error" : "success"}
         />
-      </Grid>
-    </Grid>
+      </Stack>
+      <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Typography variant="body1" component="em">
+          {"Payé par : " + expense.user.name}
+        </Typography>
+        <Typography variant="body1" component="em">
+          {expense.details ? expense.details[0].date.toLocaleDateString() : null}
+        </Typography>
+      </Stack>
+      <div>
+        <RefundDate refund={expense.refund !== undefined ? expense.refund : undefined} />
+      </div>
+    </Stack>
   )
 }

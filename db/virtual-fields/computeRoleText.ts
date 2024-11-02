@@ -1,6 +1,8 @@
+import { Role } from "@/src/app/types"
+
 // Type nécessitant la présence du rôle
 type User = {
-  role: string | null
+  role: Role | null
 }
 
 // On étend le type générique T pour y ajouter le montant total

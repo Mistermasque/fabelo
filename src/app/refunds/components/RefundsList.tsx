@@ -44,12 +44,12 @@ export function RefundsList() {
   const pathname = usePathname()
 
   const goToPreviousPage = () => {
-    const params = new URLSearchParams(searchparams)
+    const params = new URLSearchParams(searchparams.toString())
     params.set("page", (page - 1).toString())
     router.push((pathname + "?" + params.toString()) as Route)
   }
   const goToNextPage = () => {
-    const params = new URLSearchParams(searchparams)
+    const params = new URLSearchParams(searchparams.toString())
     params.set("page", (page + 1).toString())
     router.push((pathname + "?" + params.toString()) as Route)
   }

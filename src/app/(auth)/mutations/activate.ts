@@ -1,8 +1,9 @@
 import db from "db"
 import { SecurePassword } from "@blitzjs/auth/secure-password"
-import { Role, ActivateSchema } from "../schemas"
+import { ActivateSchema } from "../schemas"
 import { resolver } from "@blitzjs/rpc"
 import { hash256 } from "@blitzjs/auth"
+import type { Role } from "app/types"
 
 export class ActivateError extends Error {
   name = "ActivateError"

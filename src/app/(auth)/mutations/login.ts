@@ -1,12 +1,12 @@
 import { resolver } from "@blitzjs/rpc"
 import { AuthenticationError } from "blitz"
 import db from "db"
-import { Login } from "../schemas"
+import { LoginSchema } from "../schemas"
 import { SecurePassword } from "@blitzjs/auth/secure-password"
-import { Role } from "@/src/core/types"
+import { Role } from "app/types"
 
 export const authenticateUser = async (rawEmail: string, rawPassword: string) => {
-  const { email, password } = Login.parse({ email: rawEmail, password: rawPassword })
+  const { email, password } = LoginSchema.parse({ email: rawEmail, password: rawPassword })
   const user = await db.user.findFirst({ where: { email } })
   if (!user) throw new AuthenticationError()
 
@@ -24,7 +24,7 @@ export const authenticateUser = async (rawEmail: string, rawPassword: string) =>
   return rest
 }
 
-export default resolver.pipe(resolver.zod(Login), async ({ email, password }, ctx) => {
+export default resolver.pipe(resolver.zod(LoginSchema), async ({ email, password }, ctx) => {
   const user = await authenticateUser(email, password)
   await ctx.session.$create({ userId: user.id, role: user.role as Role })
   return user

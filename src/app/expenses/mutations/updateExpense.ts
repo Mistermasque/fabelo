@@ -7,7 +7,7 @@ export default resolver.pipe(
   resolver.authorize(),
   async ({ ...data }) => {
     // TODO: in multi-tenant app, you must add validation to ensure correct tenant
-    const { id, details, parts, userId, isDefaultParts } = data
+    const { id, details, parts, userId, isDefaultParts, title } = data
 
     let createParts: Prisma.ExpenseUserPartCreateWithoutExpenseInput[] = []
 
@@ -43,6 +43,7 @@ export default resolver.pipe(
     const expense = await db.expense.update({
       where: { id },
       data: {
+        title,
         isDefaultParts,
         user: { connect: { id: userId } },
         details: {

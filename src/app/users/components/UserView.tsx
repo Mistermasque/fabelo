@@ -39,7 +39,8 @@ export function UserView({ userId }: UserViewProps) {
   const [deleteUserMutation] = useMutation(deleteUser)
 
   const handleClickEdit = () => {
-    router.push(`/users/${user.id}/edit`)
+    // router.push(`/users/${user.id}/edit`)
+    router.push(`/`)
   }
 
   const handleClickDelete = () => {

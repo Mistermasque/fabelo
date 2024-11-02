@@ -1,6 +1,6 @@
 import { SimpleRolesIsAuthorized } from "@blitzjs/auth"
 import { User } from "@/db"
-import type { Role } from "@/src/app/users/schemas"
+import type { Role } from "app/users/schemas"
 /**
  * Type utilitaire permettant de dériver d'un type en rendant une propriété facultative
  * Ex: type MakePersonInput = PartialBy<{name: string, id: number}, 'name'> -> {name?: string, id: number}
@@ -16,7 +16,8 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never
 
-export type { Role } from "@/src/app/users/schemas"
+export type { Role } from "app/users/schemas"
+export type { UserStatus } from "app/users/schemas"
 
 declare module "@blitzjs/auth" {
   export interface Session {

@@ -27,7 +27,7 @@ export function EditExpense({ expenseId }: EditExpenseProps) {
   const { setPageTitle } = usePageTitle()
 
   useEffect(() => {
-    setPageTitle(`Modification dépense #${expenseId}`)
+    setPageTitle(`Modif. dépense #${expenseId}`)
   })
 
   const initialValues = expense

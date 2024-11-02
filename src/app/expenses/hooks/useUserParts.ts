@@ -2,10 +2,7 @@ import getUsers from "src/app/users/queries/getUsers"
 import { useState } from "react"
 import { useQuery } from "@blitzjs/rpc"
 import { z } from "zod"
-import {
-  CreateExpenseUserPartSchema,
-  UpdateExpenseUserPartSchema,
-} from "src/app/expense-user-parts/schemas"
+import { CreateExpenseUserPartSchema, UpdateExpenseUserPartSchema } from "app/expenses/schemas"
 
 type SetPartType = (userId: number, part: number, isAmount?: boolean) => void
 type SetTotalType = (total: number) => void
@@ -117,9 +114,9 @@ export function useUserParts(initial?: PartsType): {
     // Récupération du nombre de parts et du montant restant
     newValues.forEach((part) => {
       if (part.isAmount) {
-        amountTotal -= part.amount
+        amountTotal -= Number(part.amount)
       } else if (part.part !== undefined) {
-        nbTotalParts += part.part
+        nbTotalParts += Number(part.part)
       }
     })
 
@@ -129,7 +126,7 @@ export function useUserParts(initial?: PartsType): {
         if (part.part === undefined) {
           part.part = 1
         }
-        part.amount = (amountTotal * part.part) / nbTotalParts
+        part.amount = (amountTotal * Number(part.part)) / nbTotalParts
       } else {
         part.part = undefined
       }

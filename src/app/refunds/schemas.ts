@@ -3,7 +3,7 @@ import { z } from "zod"
 export const CreateRefundSchema = z.object({
   comment: z.string().nullable().optional(),
   date: z.coerce.date().nullable().optional(),
-  isValidated: z.coerce.boolean().nullable().optional(),
+  isValidated: z.coerce.boolean().optional(),
 
   // expensesId correspond à un tableau de CreateExpenseDetailSchema avec min un élément
   // on utilise donc l'astuce des tuples variables : https://github.com/colinhacks/zod#tuples
@@ -16,7 +16,7 @@ export const UpdateRefundSchema = z.object({
   id: z.number(),
   comment: z.string().nullable().optional(),
   date: z.coerce.date().nullable().optional(),
-  isValidated: z.coerce.boolean().nullable().optional(),
+  isValidated: z.coerce.boolean().optional(),
 })
 
 export const DeleteRefundSchema = z.object({

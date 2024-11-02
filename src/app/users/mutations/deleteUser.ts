@@ -37,7 +37,7 @@ export default resolver.pipe(
     const user = db.user.update({
       where: { id },
       data: {
-        isActive: false,
+        status: "DISABLED",
         lastConnection: null,
         role: null,
       },

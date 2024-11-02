@@ -8,10 +8,10 @@ export const UserSchema = z.object({
   id: z.number().int(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
-  name: z.string().nullable(),
+  name: z.string(),
   email: z.string(),
   hashedPassword: z.string().nullable(),
-  role: z.string(),
+  role: z.string().nullable(),
   status: z.string(),
   lastConnection: z.coerce.date().nullable(),
 })
